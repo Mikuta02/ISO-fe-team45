@@ -1,0 +1,20 @@
+<div class="container mt-5">
+  <h2>Create New Post</h2>
+  <div>
+    <label for="description">Description:</label>
+    <input type="text" id="description" [(ngModel)]="description" class="form-control" />
+
+    <label for="latitude">Latitude:</label>
+    <input type="number" id="latitude" [(ngModel)]="latitude" class="form-control" />
+
+    <label for="longitude">Longitude:</label>
+    <input type="number" id="longitude" [(ngModel)]="longitude" class="form-control" />
+
+    <label for="image">Image (Bunny):</label>
+    <input type="file" accept="image/png, image/gif, image/jpeg"  id="image" (change)="onImageSelected($event)" class="form-control" />
+
+    <app-map-posts (locationSelected)="onLocationSelected($event)" [isNewPost]="true"></app-map-posts>
+
+    <button (click)="createPost()" class="btn btn-primary mt-3">Create Post</button>
+  </div>
+</div>
