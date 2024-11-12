@@ -1,7 +1,11 @@
 <div class="container mt-5">
   <h2>Posts</h2>
+  <div *ngIf="posts.length === 0">
+    <p>No posts available at the moment.</p>
+  </div>
   <div *ngFor="let post of posts" class="card mb-3">
     <div class="card-body">
+      <img [src]="post.image" class="card-img-top" alt="Post Image" />
       <h5 class="card-title">{{ post.description }}</h5>
       <p class="card-text">Likes: {{ post.likesCount }}</p>
       <p class="card-text">Posted by User ID: {{ post.userId }}</p>

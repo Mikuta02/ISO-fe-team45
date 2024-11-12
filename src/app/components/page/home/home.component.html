@@ -1,4 +1,59 @@
-<div class="container mt-5">
-  <h1>Welcome to OnlyBuns!</h1>
-  <p>Your go-to platform for sharing and enjoying content.</p>
+<div class="home-container">
+  <h1>{{ title }}</h1>
+  <p>
+    Welcome to the OnlyBuns platform, where you can connect, share, and enjoy user-generated content.
+    Please explore posts, check user profiles, and enjoy the features OnlyBuns has to offer.
+  </p>
+
+  <div class="home-navigation">
+    <a routerLink="/posts" class="btn btn-primary">View Posts</a>
+    <a routerLink="/login" *ngIf="!isAuthenticated()" class="btn btn-secondary">Login</a>
+    <a routerLink="/register" *ngIf="!isAuthenticated()" class="btn btn-outline-secondary">Register</a>
+    <a routerLink="/profile" *ngIf="isAuthenticated()" class="btn btn-success">Your Profile</a>
+  </div>
+
+  <div class="accordion mt-4" id="homeAccordion">
+
+    <!-- Following Posts Section -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingFollowing">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFollowing" aria-expanded="true" aria-controls="collapseFollowing">
+          Following Posts
+        </button>
+      </h2>
+      <div id="collapseFollowing" class="accordion-collapse collapse show" aria-labelledby="headingFollowing" data-bs-parent="#homeAccordion">
+        <div class="accordion-body">
+          <app-posts onlyFollowing="true"></app-posts>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trending Posts Section -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingTrending">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTrending" aria-expanded="false" aria-controls="collapseTrending">
+          Trending Posts
+        </button>
+      </h2>
+      <div id="collapseTrending" class="accordion-collapse collapse" aria-labelledby="headingTrending" data-bs-parent="#homeAccordion">
+        <div class="accordion-body">
+          <app-posts trending="true"></app-posts>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nearby Posts on Map Section -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingNearby">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNearby" aria-expanded="false" aria-controls="collapseNearby">
+          Nearby Posts on Map
+        </button>
+      </h2>
+      <div id="collapseNearby" class="accordion-collapse collapse" aria-labelledby="headingNearby" data-bs-parent="#homeAccordion">
+        <div class="accordion-body">
+          <app-map-posts></app-map-posts>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

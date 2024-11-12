@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {booleanAttribute, Component, Input, OnInit} from '@angular/core';
 import { PostService } from '../../services/post.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -11,22 +11,45 @@ export class PostsComponent implements OnInit {
   posts: any[] = [];
   comments: { [key: number]: any[] } = {};
   newComment: { [key: number]: string } = {};
+  @Input({transform: booleanAttribute}) onlyFollowing: boolean = false;
+  @Input({transform: booleanAttribute}) trending: boolean = false;
 
   constructor(private postService: PostService, private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.postService.getAllPosts().subscribe({
-      next: (data) => {
-        this.posts = data;
-        // Preuzimanje komentara za svaku objavu
-        this.posts.forEach(post => {
-          this.getComments(post.id);
-        });
-      },
-      error: (err) => {
-        console.error('Error fetching posts', err);
-      }
-    });
+    if(!this.onlyFollowing) {
+      this.postService.getAllPosts().subscribe({
+        next: (data) => {
+          this.posts = data;
+          // Preuzimanje komentara za svaku objavu
+          this.posts.forEach(post => {
+            this.getComments(post.id);
+          });
+        },
+        error: (err) => {
+          console.error('Error fetching posts', err);
+        }
+      });
+    }else{
+      this.postService.getFollowingPosts().subscribe({
+        next: (data) => {
+          this.posts = data;
+        },
+        error: (err) => {
+          console.error('Error fetching following posts', err);
+        }
+      });
+    }
+    if(this.trending){
+      this.postService.getTrendingPosts().subscribe({
+        next: (data) => {
+          this.posts = data;
+        },
+        error: (err) => {
+          console.error('Error fetching trending posts', err);
+        }
+      });
+    }
   }
 
   isAuthenticated(): boolean {

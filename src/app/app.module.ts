@@ -12,6 +12,8 @@ import {jwtInterceptor} from './interceptors/jwt.service';
 import { HomeComponent } from './components/page/home/home.component';
 import { PostsComponent } from './components/posts/posts.component';
 import { UserListComponent } from './components/page/user-list/user-list.component';
+import { MapPostsComponent } from './components/map-posts/map-posts.component';
+import { CreatePostComponent } from './components/create-post/create-post.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,9 @@ import { UserListComponent } from './components/page/user-list/user-list.compone
     ProfileComponent,
     HomeComponent,
     PostsComponent,
-    UserListComponent
+    UserListComponent,
+    MapPostsComponent,
+    CreatePostComponent
   ],
   imports: [
     BrowserModule,
