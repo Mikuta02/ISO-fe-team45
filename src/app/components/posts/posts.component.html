@@ -1,0 +1,28 @@
+<div class="container mt-5">
+  <h2>Posts</h2>
+  <div *ngFor="let post of posts" class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">{{ post.description }}</h5>
+      <p class="card-text">Likes: {{ post.likesCount }}</p>
+      <p class="card-text">Posted by User ID: {{ post.userId }}</p>
+
+      <!-- Dugme za lajkovanje - Dostupno samo za autentifikovane korisnike -->
+      <button *ngIf="isAuthenticated()" class="btn btn-primary" (click)="likePost(post.id)">Like</button>
+      <button *ngIf="!isAuthenticated()" class="btn btn-secondary" disabled>Login to Like</button>
+
+      <!-- Komentari za svaki post -->
+      <div class="comments mt-3">
+        <h6>Comments:</h6>
+        <div *ngFor="let comment of comments[post.id]" class="comment mb-2">
+          <p>{{ comment.content }} - User ID: {{ comment.authorId }}</p>
+        </div>
+      </div>
+
+      <!-- Dodavanje novog komentara - samo za autentifikovane korisnike -->
+      <div *ngIf="isAuthenticated()" class="add-comment mt-3">
+        <textarea [(ngModel)]="newComment[post.id]" rows="2" class="form-control" placeholder="Add a comment..."></textarea>
+        <button class="btn btn-primary mt-2" (click)="addComment(post.id)">Add Comment</button>
+      </div>
+    </div>
+  </div>
+</div>

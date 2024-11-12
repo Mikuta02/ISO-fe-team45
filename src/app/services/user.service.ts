@@ -17,4 +17,8 @@ export class UserService {
   updateUser(user: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/${user.id}`, user);
   }
+
+  isUsernameTaken(username: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/check-username?username=${username}`);
+  }
 }

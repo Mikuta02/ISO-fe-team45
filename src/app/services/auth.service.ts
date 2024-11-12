@@ -31,6 +31,15 @@ export class AuthService {
     return !this.jwtHelper.isTokenExpired(token);
   }
 
+  getUser(): any {
+    const token = this.getToken();
+    if (!token || token.split('.').length !== 3) {
+      return null;
+    }
+
+    return this.jwtHelper.decodeToken(token);
+  }
+
   logout(): void {
     localStorage.removeItem('token');
   }
