@@ -47,4 +47,9 @@ export class AuthService {
   getToken(): string | null {
     return localStorage.getItem('token');
   }
+
+  getRole(): string | null {
+    const user = this.getUser();
+    return user ? user.role : null;
+  }
 }

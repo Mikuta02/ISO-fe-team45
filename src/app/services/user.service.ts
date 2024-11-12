@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
 @Injectable({
@@ -20,5 +20,35 @@ export class UserService {
 
   isUsernameTaken(username: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/check-username?username=${username}`);
+  }
+
+  getAllUsers(filters?: any): Observable<any> {
+    let params = new HttpParams();
+
+    if (filters) {
+      if (filters.firstName) {
+        params = params.append('firstName', filters.firstName);
+      }
+      if (filters.lastName) {
+        params = params.append('lastName', filters.lastName);
+      }
+      if (filters.email) {
+        params = params.append('email', filters.email);
+      }
+      if (filters.minPosts != null) {
+        params = params.append('minPosts', filters.minPosts);
+      }
+      if (filters.maxPosts != null) {
+        params = params.append('maxPosts', filters.maxPosts);
+      }
+    }
+
+    return this.http.get(`${this.apiUrl}`, { params });
+  }
+
+  getAllUsersSorted(sortBy: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sorted`, {
+      params: new HttpParams().set('sortBy', sortBy)
+    });
   }
 }

@@ -1,0 +1,57 @@
+<div class="container mt-5">
+  <h2>Registered Users</h2>
+
+  <!-- Forma za pretragu korisnika -->
+  <form (ngSubmit)="getAllUsers()">
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <input type="text" class="form-control" [(ngModel)]="searchParams.firstName" name="firstName" placeholder="First Name">
+      </div>
+      <div class="col-md-3">
+        <input type="text" class="form-control" [(ngModel)]="searchParams.lastName" name="lastName" placeholder="Last Name">
+      </div>
+      <div class="col-md-3">
+        <input type="text" class="form-control" [(ngModel)]="searchParams.email" name="email" placeholder="Email">
+      </div>
+      <div class="col-md-3">
+        <input type="number" class="form-control" [(ngModel)]="searchParams.minPosts" name="minPosts" placeholder="Min Posts">
+      </div>
+      <div class="col-md-3 mt-2">
+        <input type="number" class="form-control" [(ngModel)]="searchParams.maxPosts" name="maxPosts" placeholder="Max Posts">
+      </div>
+      <div class="col-md-3 mt-2">
+        <button type="submit" class="btn btn-primary">Search</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Dugmad za sortiranje korisnika -->
+  <div class="mb-3">
+    <button class="btn btn-secondary" (click)="sortUsers('followersCount')">Sort by Followers Count</button>
+    <button class="btn btn-secondary" (click)="sortUsers('email')">Sort by Email</button>
+  </div>
+
+  <!-- Tabela za prikazivanje korisnika -->
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+      <th>Number of Posts</th>
+      <th>Followers Count</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let user of users">
+      <td>{{ user.id }}</td>
+      <td>{{ user.firstName }}</td>
+      <td>{{ user.lastName }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.postsCount }}</td>
+      <td>{{ user.followersCount }}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
