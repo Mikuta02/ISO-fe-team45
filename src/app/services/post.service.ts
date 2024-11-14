@@ -51,4 +51,12 @@ export class PostService {
 
     return this.http.post(`${this.apiUrl}/create`, formData);
   }
+
+  deletePost(postId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${postId}`);
+  }
+
+  updatePost(postId:number, post:FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${postId}`, post);
+  }
 }

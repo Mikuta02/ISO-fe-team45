@@ -14,6 +14,7 @@ import { PostsComponent } from './components/posts/posts.component';
 import { UserListComponent } from './components/page/user-list/user-list.component';
 import { MapPostsComponent } from './components/map-posts/map-posts.component';
 import { CreatePostComponent } from './components/create-post/create-post.component';
+import { EditPostComponent } from './components/edit-post/edit-post.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { CreatePostComponent } from './components/create-post/create-post.compon
     PostsComponent,
     UserListComponent,
     MapPostsComponent,
-    CreatePostComponent
+    CreatePostComponent,
+    EditPostComponent
   ],
   imports: [
     BrowserModule,

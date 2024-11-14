@@ -10,6 +10,10 @@
       <p class="card-text">Likes: {{ post.likesCount }}</p>
       <p class="card-text">Posted by User ID: {{ post.userId }}</p>
 
+      <button *ngIf="isAuthenticated() && isCurrentUserOwner(post.userId)" routerLink="/posts/edit/{{ post.id }}" class="btn btn-warning">Edit</button>
+      <button *ngIf="isAuthenticated() && isCurrentUserOwner(post.userId)" (click)="deletePost(post.id)">Delete</button>
+
+
       <!-- Dugme za lajkovanje - Dostupno samo za autentifikovane korisnike -->
       <button *ngIf="isAuthenticated()" class="btn btn-primary" (click)="likePost(post.id)">Like</button>
       <button *ngIf="!isAuthenticated()" class="btn btn-secondary" disabled>Login to Like</button>

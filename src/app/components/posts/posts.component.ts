@@ -17,7 +17,11 @@ export class PostsComponent implements OnInit {
   constructor(private postService: PostService, private authService: AuthService) {}
 
   ngOnInit(): void {
-    if(!this.onlyFollowing) {
+    this.loadPosts();
+  }
+
+  private loadPosts() {
+    if (!this.onlyFollowing) {
       this.postService.getAllPosts().subscribe({
         next: (data) => {
           this.posts = data;
@@ -30,7 +34,7 @@ export class PostsComponent implements OnInit {
           console.error('Error fetching posts', err);
         }
       });
-    }else{
+    } else {
       this.postService.getFollowingPosts().subscribe({
         next: (data) => {
           this.posts = data;
@@ -40,7 +44,7 @@ export class PostsComponent implements OnInit {
         }
       });
     }
-    if(this.trending){
+    if (this.trending) {
       this.postService.getTrendingPosts().subscribe({
         next: (data) => {
           this.posts = data;
@@ -50,6 +54,11 @@ export class PostsComponent implements OnInit {
         }
       });
     }
+  }
+
+  isCurrentUserOwner(userId: number): boolean {
+    const currentUser = this.authService.getUser();
+    return currentUser && currentUser.userId === userId;
   }
 
   isAuthenticated(): boolean {
@@ -65,9 +74,14 @@ export class PostsComponent implements OnInit {
     this.postService.likePost(postId).subscribe({
       next: () => {
         alert('Post liked successfully');
+        this.loadPosts(); // Osvježavamo prikaz posta nakon lajkovanja
       },
       error: (err) => {
-        console.error('Error liking post', err);
+        if (err.status === 400) {
+          alert('You have already liked this post');
+        } else {
+          console.error('Error liking post', err);
+        }
       }
     });
   }
@@ -114,6 +128,26 @@ export class PostsComponent implements OnInit {
         console.error(`Error adding comment for post ${postId}`, err);
       }
     });
+  }
+
+  editPost(post: any): void {
+    // Prikazivanje forme za editovanje posta (implementirati formu)
+    console.log('Editing post:', post);
+    // Nakon što se podaci ažuriraju, pozvati metodu za ažuriranje posta
+  }
+
+  deletePost(postId: number): void {
+    if (confirm('Are you sure you want to delete this post?')) {
+      this.postService.deletePost(postId).subscribe({
+        next: () => {
+          alert('Post deleted successfully');
+          this.loadPosts();
+        },
+        error: (err) => {
+          console.error('Error deleting post', err);
+        }
+      });
+    }
   }
 
 }

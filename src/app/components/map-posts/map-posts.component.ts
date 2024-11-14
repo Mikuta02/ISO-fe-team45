@@ -14,6 +14,11 @@ export class MapPostsComponent implements OnInit {
 
   @Output() locationSelected = new EventEmitter<{ latitude: number, longitude: number }>();
 
+  @Input() initialLatitude: number = 45.2671; // Default: Novi Sad
+  @Input() initialLongitude: number = 19.8335; // Default: Novi Sad
+  @Output() coordinatesChange = new EventEmitter<{ latitude: number, longitude: number }>();
+
+
   constructor(private postService: PostService) {}
 
   ngOnInit(): void {
@@ -33,6 +38,16 @@ export class MapPostsComponent implements OnInit {
             .openPopup();
         }
       });
+      const marker = L.marker([this.initialLatitude, this.initialLongitude], { draggable: true }).addTo(this.map!);
+
+      marker.on('dragend', (event: L.LeafletEvent) => {
+        const latLng = (event.target as L.Marker).getLatLng();
+        this.coordinatesChange.emit({ latitude: latLng.lat, longitude: latLng.lng });
+      });
+
+      // Emitujemo početne koordinate kada se mapa učita
+      this.coordinatesChange.emit({ latitude: this.initialLatitude, longitude: this.initialLongitude });
+
     } else {
       this.getNearbyPosts();
     }
@@ -68,7 +83,7 @@ export class MapPostsComponent implements OnInit {
       this.posts.forEach((post) => {
         const marker = L.marker([post.locationLatitude, post.locationLongitude]);
         marker.addTo(this.map!)
-          .bindPopup(`<b>${post.title}</b><br>${post.description}`)
+          .bindPopup(`<b>Post</b><br>${post.description}`)
           .openPopup();
       });
     }

@@ -1,0 +1,29 @@
+<div class="container mt-5">
+  <h2>Edit Post</h2>
+  <form (ngSubmit)="updatePost()">
+    <div class="mb-3">
+      <label for="description" class="form-label">Description</label>
+      <input type="text" id="description" [(ngModel)]="post.description" name="description" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="latitude" class="form-label">Latitude</label>
+      <input type="number" id="latitude" [(ngModel)]="post.locationLatitude" name="latitude" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+      <label for="longitude" class="form-label">Longitude</label>
+      <input type="number" id="longitude" [(ngModel)]="post.locationLongitude" name="longitude" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+      <label for="image" class="form-label">Image (Bunny)</label>
+      <input type="file" accept="image/png, image/gif, image/jpeg" id="image" (change)="onImageSelected($event)" class="form-control" />
+    </div>
+
+    <!-- Dodavanje komponente za mapu -->
+    <app-map-posts [isNewPost]="true" (coordinatesChange)="onCoordinatesChange($event)"></app-map-posts>
+
+    <button type="submit" class="btn btn-primary mt-3">Update Post</button>
+  </form>
+</div>
