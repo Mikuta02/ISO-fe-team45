@@ -15,6 +15,8 @@ import { UserListComponent } from './components/page/user-list/user-list.compone
 import { MapPostsComponent } from './components/map-posts/map-posts.component';
 import { CreatePostComponent } from './components/create-post/create-post.component';
 import { EditPostComponent } from './components/edit-post/edit-post.component';
+import { TrendsComponent } from './components/trends/trends.component';
+import { MapComponent } from './components/map/map.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,9 @@ import { EditPostComponent } from './components/edit-post/edit-post.component';
     UserListComponent,
     MapPostsComponent,
     CreatePostComponent,
-    EditPostComponent
+    EditPostComponent,
+    TrendsComponent,
+    MapComponent
   ],
   imports: [
     BrowserModule,

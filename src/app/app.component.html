@@ -24,6 +24,12 @@
         <li class="nav-item">
           <a class="nav-link" routerLink="/posts">Posts</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/map">Care Locations</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/trends']" *ngIf="isAuthenticated()">View Network Trends</a>
+        </li>
         <li class="nav-item" *ngIf="isAuthenticated()">
           <a class="nav-link" routerLink="/create-post">Create Post</a>
         </li>

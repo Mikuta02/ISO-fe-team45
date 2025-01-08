@@ -15,7 +15,7 @@ export class UserService {
   }
 
   updateUser(user: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${user.id}`, user);
+    return this.http.put(`${this.apiUrl}/${user.id}/profile`, user);
   }
 
   isUsernameTaken(username: string): Observable<any> {
@@ -50,5 +50,17 @@ export class UserService {
     return this.http.get(`${this.apiUrl}/sorted`, {
       params: new HttpParams().set('sortBy', sortBy)
     });
+  }
+
+  changePassword(userId: number, passwords: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${userId}/change-password`, passwords);
+  }
+
+  getFollowers(userId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${userId}/followers`);
+  }
+
+  getFollowing(userId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${userId}/following`);
   }
 }

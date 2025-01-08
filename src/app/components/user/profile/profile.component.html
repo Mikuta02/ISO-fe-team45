@@ -1,22 +1,49 @@
 <div class="container mt-5" *ngIf="user">
-  <h2>Profile Page</h2>
+  <h2>{{ user.firstName }} {{ user.lastName }}'s Profile</h2>
+  <p><strong>Email:</strong> {{ user.email }}</p>
+  <p><strong>Followers:</strong> {{ followers.length }}</p>
+  <p><strong>Following:</strong> {{ following.length }}</p>
+
+  <h4>Update Profile</h4>
   <form (ngSubmit)="updateProfile()">
     <div class="form-group">
-      <label for="username">Username</label>
-      <input id="username" [(ngModel)]="user.username" name="username" class="form-control" readonly />
-    </div>
-    <div class="form-group">
       <label for="firstName">First Name</label>
-      <input id="firstName" [(ngModel)]="user.firstName" name="firstName" class="form-control" />
+      <input id="firstName" [(ngModel)]="user.firstName" name="firstName" class="form-control" required />
     </div>
     <div class="form-group">
       <label for="lastName">Last Name</label>
-      <input id="lastName" [(ngModel)]="user.lastName" name="lastName" class="form-control" />
+      <input id="lastName" [(ngModel)]="user.lastName" name="lastName" class="form-control" required />
     </div>
     <div class="form-group">
-      <label for="email">Email</label>
-      <input id="email" [(ngModel)]="user.email" name="email" class="form-control" />
+      <label for="address">Address</label>
+      <input id="address" [(ngModel)]="user.address" name="address" class="form-control" />
     </div>
     <button type="submit" class="btn btn-primary mt-3">Update Profile</button>
   </form>
+
+  <h4 class="mt-5">Change Password</h4>
+  <form (ngSubmit)="changePassword()">
+    <div class="form-group">
+      <label for="newPassword">New Password</label>
+      <input type="password" id="newPassword" [(ngModel)]="passwordChange.newPassword" name="newPassword" class="form-control" required />
+    </div>
+    <div class="form-group">
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" [(ngModel)]="passwordChange.confirmPassword" name="confirmPassword" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-secondary mt-3">Change Password</button>
+  </form>
+
+  <h4 class="mt-5">Your Posts</h4>
+  <div *ngIf="userPosts.length; else noPosts">
+    <div *ngFor="let post of userPosts" class="card mt-3">
+      <div class="card-body">
+        <p>{{ post.description }}</p>
+        <small>{{ post.createdAt | date }}</small>
+      </div>
+    </div>
+  </div>
+  <ng-template #noPosts>
+    <p>No posts available</p>
+  </ng-template>
 </div>

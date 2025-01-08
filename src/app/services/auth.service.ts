@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {Observable, switchMap} from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import {IpAddressService} from './ip-adress.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,21 @@ export class AuthService {
   private apiUrl = 'http://localhost:8080/api/users';
   private jwtHelper = new JwtHelperService();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private ipService: IpAddressService) {}
 
   register(user: any): Observable<any> {
     return this.http.post(`${this.apiUrl}`, user);
   }
 
   login(credentials: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, credentials);
+    return this.ipService.getIpAddress().pipe(
+      switchMap((data) => {
+        const ipAddress = data.ip; // IP adresa korisnika
+        return this.http.post(`${this.apiUrl}/login`, credentials, {
+          headers: { 'X-FORWARDED-FOR': ipAddress },
+        });
+      })
+    );
   }
 
   isAuthenticated(): boolean {

@@ -1,0 +1,49 @@
+<div class="container mt-5">
+  <h2>Network Trends</h2>
+  <p><strong>Total Posts:</strong> {{ totalPosts }}</p>
+  <p><strong>Posts in the Last Month:</strong> {{ postsLastMonth }}</p>
+
+  <!-- Prikaz najpopularnijih objava ove nedelje -->
+  <h4>Top 5 Liked Posts This Week</h4>
+  <div *ngIf="topPostsThisWeek.length; else noWeeklyPosts">
+    <div *ngFor="let post of topPostsThisWeek" class="card mt-3">
+      <img [src]="post.image" class="card-img-top" alt="Post Image" style="height: 200px; object-fit: cover;">
+      <div class="card-body">
+        <h5 class="card-title">{{ post.description }}</h5>
+        <p class="card-text">Likes: {{ post.likesCount }}</p>
+      </div>
+    </div>
+  </div>
+  <ng-template #noWeeklyPosts>
+    <p>No top posts available for this week.</p>
+  </ng-template>
+
+  <!-- Prikaz najpopularnijih objava svih vremena -->
+  <h4 class="mt-4">Top 10 Posts of All Time</h4>
+  <div *ngIf="topPostsAllTime.length; else noAllTimePosts">
+    <div *ngFor="let post of topPostsAllTime" class="card mt-3">
+      <img [src]="post.image" class="card-img-top" alt="Post Image" style="height: 200px; object-fit: cover;">
+      <div class="card-body">
+        <h5 class="card-title">{{ post.description }}</h5>
+        <p class="card-text">Likes: {{ post.likesCount }}</p>
+        <p class="card-text"><small>Posted by User ID: {{ post.userId }}</small></p>
+      </div>
+    </div>
+  </div>
+  <ng-template #noAllTimePosts>
+    <p>No top posts of all time available.</p>
+  </ng-template>
+
+  <!-- Prikaz top korisnika po lajkovima ove nedelje -->
+  <h4 class="mt-4">Top 10 Users by Likes Given This Week</h4>
+  <div *ngIf="topUsersByLikes.length; else noTopUsers">
+    <ul class="list-group">
+      <li *ngFor="let user of topUsersByLikes" class="list-group-item">
+        User ID: {{ user.userId }} - Likes Given: {{ user.likesGiven }}
+      </li>
+    </ul>
+  </div>
+  <ng-template #noTopUsers>
+    <p>No user data available for this week.</p>
+  </ng-template>
+</div>

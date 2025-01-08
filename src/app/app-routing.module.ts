@@ -8,6 +8,8 @@ import {PostsComponent} from './components/posts/posts.component';
 import {UserListComponent} from './components/page/user-list/user-list.component';
 import {CreatePostComponent} from './components/create-post/create-post.component';
 import {EditPostComponent} from './components/edit-post/edit-post.component';
+import {TrendsComponent} from './components/trends/trends.component';
+import {MapComponent} from './components/map/map.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -19,6 +21,8 @@ const routes: Routes = [
   { path: 'users', component: UserListComponent },
   { path: 'create-post', component: CreatePostComponent },
   { path: 'posts/edit/:id', component: EditPostComponent},
+  { path: 'trends', component: TrendsComponent },
+  { path: 'map', component: MapComponent } // samo ulogovani korisnici
 ];
 
 @NgModule({

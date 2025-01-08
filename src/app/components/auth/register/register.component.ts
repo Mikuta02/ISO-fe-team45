@@ -1,17 +1,19 @@
 import { Component } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from '../../../services/auth.service';
-import {Router} from '@angular/router';
-import {UserService} from '../../../services/user.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../../services/auth.service';
+import { Router } from '@angular/router';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
+  styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
   registerForm: FormGroup;
   usernameTaken: boolean = false;
+  successMessage: string | null = null;
+  errorMessage: string | null = null;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private userService: UserService, private router: Router) {
     this.registerForm = this.fb.group({
@@ -41,11 +43,23 @@ export class RegisterComponent {
     if (this.registerForm.valid && !this.usernameTaken) {
       this.authService.register(this.registerForm.value).subscribe({
         next: (response) => {
-          console.log('Registration successful', response);
-          this.router.navigate(['/login']);
+          this.successMessage = 'Registration successful! Redirecting to login page...';
+          this.errorMessage = null; // Reset error message
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 3000); // Automatski prelazak nakon 3 sekunde
         },
         error: (err) => {
           console.error('Registration failed', err);
+          // Različite poruke na osnovu odgovora sa servera
+          if (err.status === 400 && err.error === 'Username already in use') {
+            this.errorMessage = 'Username is already taken. Please choose another.';
+          } else if (err.status === 500) {
+            this.errorMessage = 'Internal server error. Please try again later.';
+          } else {
+            this.errorMessage = 'An unexpected error occurred. Please try again.';
+          }
+          this.successMessage = null; // Reset success message
         }
       });
     }

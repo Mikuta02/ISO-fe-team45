@@ -14,6 +14,10 @@ export class PostService {
     return this.http.get(`${this.apiUrl}/get`);
   }
 
+  getUserPosts(userId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/user/${userId}`);
+  }
+
   getPostById(postId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/${postId}`);
   }
@@ -58,5 +62,11 @@ export class PostService {
 
   updatePost(postId:number, post:FormData): Observable<any> {
     return this.http.put(`${this.apiUrl}/${postId}`, post);
+  }
+
+  getMapData(latitude: number, longitude: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/map`, {
+      params: { latitude: latitude.toString(), longitude: longitude.toString() }
+    });
   }
 }

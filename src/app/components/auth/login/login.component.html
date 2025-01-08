@@ -8,6 +8,12 @@
       <label for="password">Password</label>
       <input type="password" id="password" formControlName="password" class="form-control" />
     </div>
+
+    <!-- Poruka o grešci -->
+    <div *ngIf="errorMessage" class="alert alert-danger mt-3" role="alert">
+      {{ errorMessage }}
+    </div>
+
     <button type="submit" class="btn btn-primary mt-3">Login</button>
   </form>
 </div>
