@@ -1,0 +1,9 @@
+<div class="container mt-5" *ngIf="user">
+  <h2>{{ user.firstName }} {{ user.lastName }}'s Profile</h2>
+  <p><strong>Email:</strong> {{ user.email }}</p>
+  <p><strong>Followers:</strong> {{ user.followersCount }}</p>
+  <p><strong>Following:</strong> {{ user.followingCount }}</p>
+
+  <button *ngIf="!isFollowing" (click)="follow()" class="btn btn-primary mt-3">Follow</button>
+  <button *ngIf="isFollowing" (click)="unfollow()" class="btn btn-secondary mt-3">Unfollow</button>
+</div>
