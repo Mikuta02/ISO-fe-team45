@@ -1,0 +1,49 @@
+<div class="container mt-5">
+  <h2>Chat</h2>
+
+  <!-- Lista korisnika -->
+  <div class="user-list">
+    <h4>Select a user to chat with</h4>
+    <div *ngIf="followedUsers.length > 0; else noUsers" class="user-list-group">
+      <div
+        *ngFor="let user of followedUsers"
+        class="list-group-item"
+        (click)="openChatModal(chatModal, user)"
+      >
+        {{ user.firstName }} {{ user.lastName }}
+      </div>
+    </div>
+    <ng-template #noUsers>
+      <p>No followed users found.</p>
+    </ng-template>
+  </div>
+
+  <!-- Modal za privatni chat -->
+  <ng-template #chatModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">
+        Chat with {{ selectedUser?.firstName }} {{ selectedUser?.lastName }}
+      </h5>
+      <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <div class="chat-messages">
+        <div *ngFor="let message of messages" class="message">
+          <strong>{{ message.sender }}:</strong> {{ message.content }}
+        </div>
+      </div>
+      <div class="chat-input mt-3">
+        <input
+          type="text"
+          [(ngModel)]="messageContent"
+          placeholder="Enter your message"
+          class="form-control"
+        />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+      <button type="button" class="btn btn-primary" (click)="sendPrivateMessage()">Send</button>
+    </div>
+  </ng-template>
+</div>

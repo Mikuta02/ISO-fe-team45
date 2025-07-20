@@ -1,0 +1,30 @@
+.user-list-group {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.list-group-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.list-group-item:hover {
+  background-color: #f1f1f1;
+}
+
+.chat-messages {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 10px;
+  background-color: #fafafa;
+}
+
+.chat-input input {
+  width: 100%;
+}
+
+.modal-body {
+  max-height: 400px;
+  overflow-y: auto;
+}

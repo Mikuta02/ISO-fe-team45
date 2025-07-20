@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {Observable, switchMap} from 'rxjs';
+import { Observable, switchMap, tap } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import {IpAddressService} from './ip-adress.service';
+import { IpAddressService } from './ip-adress.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/users';
@@ -24,6 +24,21 @@ export class AuthService {
         return this.http.post(`${this.apiUrl}/login`, credentials, {
           headers: { 'X-FORWARDED-FOR': ipAddress },
         });
+      }),
+      tap((response: any) => {
+        const token = response.token;
+        if (token) {
+          localStorage.setItem('token', token);
+
+          // Dekodiranje tokena kako bismo dobili userId i ulogu
+          const decodedToken = this.jwtHelper.decodeToken(token);
+          if (decodedToken && decodedToken.userId) {
+            localStorage.setItem('userId', decodedToken.userId.toString()); // Čuvanje userId
+          }
+          if (decodedToken && decodedToken.role) {
+            localStorage.setItem('role', decodedToken.role); // Opcionalno čuvanje role
+          }
+        }
       })
     );
   }
@@ -48,8 +63,14 @@ export class AuthService {
     return this.jwtHelper.decodeToken(token);
   }
 
+  getUserId(): string | null {
+    return localStorage.getItem('userId'); // Dobijanje sačuvanog `userId`
+  }
+
   logout(): void {
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('role'); // Opcionalno brisanje role
   }
 
   getToken(): string | null {
@@ -57,7 +78,6 @@ export class AuthService {
   }
 
   getRole(): string | null {
-    const user = this.getUser();
-    return user ? user.role : null;
+    return localStorage.getItem('role');
   }
 }

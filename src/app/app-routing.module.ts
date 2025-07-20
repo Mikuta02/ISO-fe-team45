@@ -10,6 +10,8 @@ import {CreatePostComponent} from './components/create-post/create-post.componen
 import {EditPostComponent} from './components/edit-post/edit-post.component';
 import {TrendsComponent} from './components/trends/trends.component';
 import {MapComponent} from './components/map/map.component';
+import {ChatComponent} from './components/chat/chat.component';
+import {UserProfileComponent} from './components/user-profile/user-profile.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -22,7 +24,9 @@ const routes: Routes = [
   { path: 'create-post', component: CreatePostComponent },
   { path: 'posts/edit/:id', component: EditPostComponent},
   { path: 'trends', component: TrendsComponent },
-  { path: 'map', component: MapComponent } // samo ulogovani korisnici
+  { path: 'map', component: MapComponent }, // samo ulogovani korisnici
+  { path: 'user-profile/:id', component: UserProfileComponent },
+  { path: 'chat', component: ChatComponent },
 ];
 
 @NgModule({

@@ -63,4 +63,8 @@ export class UserService {
   getFollowing(userId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/${userId}/following`);
   }
+
+  getUserById(userId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${userId}`);
+  }
 }

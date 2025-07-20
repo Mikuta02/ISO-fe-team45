@@ -17,6 +17,11 @@ import { CreatePostComponent } from './components/create-post/create-post.compon
 import { EditPostComponent } from './components/edit-post/edit-post.component';
 import { TrendsComponent } from './components/trends/trends.component';
 import { MapComponent } from './components/map/map.component';
+import { ChatComponent } from './components/chat/chat.component';
+import { StompRService } from '@stomp/ng2-stompjs';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {FollowService} from './services/follow.service';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
 
 @NgModule({
   declarations: [
@@ -31,18 +36,23 @@ import { MapComponent } from './components/map/map.component';
     CreatePostComponent,
     EditPostComponent,
     TrendsComponent,
-    MapComponent
+    MapComponent,
+    ChatComponent,
+    UserProfileComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    NgbModule
   ],
   providers: [
     provideHttpClient(
       withInterceptors([jwtInterceptor])
     ),
+    StompRService,
+    FollowService,
   ],
   bootstrap: [AppComponent]
 })
