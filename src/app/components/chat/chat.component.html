@@ -27,11 +27,15 @@
       <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-      <div class="chat-messages">
-        <div *ngFor="let message of messages" class="message">
-          <strong>{{ message.sender }}:</strong> {{ message.content }}
+      <div class="chat-messages" style="max-height: 260px; overflow-y: auto;">
+        <div *ngFor="let message of messages"
+             class="message"
+             [ngClass]="{'me': message.sender === authService.getUser().sub}">
+          <strong>{{ message.sender === authService.getUser().sub ? 'Me' : message.sender }}:</strong>
+          {{ message.content }}
         </div>
       </div>
+
       <div class="chat-input mt-3">
         <input
           type="text"

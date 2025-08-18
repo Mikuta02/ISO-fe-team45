@@ -28,3 +28,5 @@
   max-height: 400px;
   overflow-y: auto;
 }
+
+.me { color: blue; font-weight: bold; }
