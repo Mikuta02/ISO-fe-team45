@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import * as L from 'leaflet';
 import { PostService } from '../../services/post.service';
 
 @Component({
@@ -8,56 +7,34 @@ import { PostService } from '../../services/post.service';
   styleUrls: ['./map.component.css']
 })
 export class MapComponent implements OnInit {
-  private map: any;
+  latitude = 45.2671;
+  longitude = 19.8335;
+  mapData: any[] = [];
+  loading = false;
 
   constructor(private postService: PostService) {}
 
   ngOnInit(): void {
-    this.initMap();
-    this.loadMapData();
+    this.loadMapData(this.latitude, this.longitude);
   }
 
-  private initMap(): void {
-    this.map = L.map('map').setView([44.8, 20.46], 13); // Privremena lokacija dok ne stigne odgovor
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(this.map);
+  onMapClick(evt: { lat: number; lng: number }): void {
+    this.latitude = evt.lat;
+    this.longitude = evt.lng;
+    this.loadMapData(this.latitude, this.longitude);
   }
 
-  private loadMapData(): void {
-    navigator.geolocation.getCurrentPosition((position) => {
-      const { latitude, longitude } = position.coords;
-
-      this.postService.getMapData(latitude, longitude).subscribe({
-        next: (data) => {
-          // Centriramo mapu na lokaciju iz servera
-          this.map.setView([data.centerLatitude, data.centerLongitude], 13);
-
-          // Prikaz objava (ako postoje)
-          data.nearbyPosts.forEach((post: any) => {
-            L.marker([post.locationLatitude, post.locationLongitude])
-              .addTo(this.map)
-              .bindPopup(`<b>${post.description}</b><br>Likes: ${post.likesCount}`);
-          });
-
-          // Prikaz lokacija za brigu o zečevima
-          data.nearbyLocations.forEach((location: any) => {
-            L.marker([location.latitude, location.longitude], { icon: this.getCareLocationIcon() })
-              .addTo(this.map)
-              .bindPopup(`<b>${location.name}</b>`);
-          });
-        },
-        error: (err) => {
-          console.error('Failed to load map data', err);
-        }
-      });
-    });
-  }
-
-  private getCareLocationIcon(): L.Icon {
-    return L.icon({
-      iconUrl: 'assets/icons/healthcare.png',
-      iconSize: [30, 30]
+  private loadMapData(latitude: number, longitude: number): void {
+    this.loading = true;
+    this.postService.getMapData(latitude, longitude).subscribe({
+      next: (data: any[]) => {
+        this.mapData = data || [];
+        this.loading = false;
+      },
+      error: (err: any) => {
+        console.error('Failed to load map data', err);
+        this.loading = false;
+      }
     });
   }
 }

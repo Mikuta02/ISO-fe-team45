@@ -1,11 +1,13 @@
 <div class="container mt-5">
   <h2>Posts</h2>
+
   <div *ngIf="posts.length === 0">
     <p>No posts available at the moment.</p>
   </div>
-  <div *ngFor="let post of posts" class="card mb-3">
+
+  <div *ngFor="let post of posts; trackBy: trackByPostId" class="card mb-3">
     <div class="card-body">
-      <img [src]="post.image" class="card-img-top" alt="Post Image" />
+      <img *ngIf="post.image" [src]="post.image" class="card-img-top" alt="Post Image" />
       <h5 class="card-title">{{ post.description }}</h5>
       <p class="card-text">Likes: {{ post.likesCount }}</p>
 
@@ -15,22 +17,61 @@
         <a [routerLink]="['/user-profile', post.userId]">{{ post.userId }}</a>
       </p>
 
-      <button *ngIf="isAuthenticated() && isCurrentUserOwner(post.userId)" routerLink="/posts/edit/{{ post.id }}" class="btn btn-warning">Edit</button>
-      <button *ngIf="isAuthenticated() && isCurrentUserOwner(post.userId)" (click)="deletePost(post.id)" class="btn btn-danger">Delete</button>
+      <!-- Edit/Delete samo za vlasnika -->
+      <button
+        *ngIf="me?.id === post.userId"
+        [routerLink]="['/posts/edit', post.id]"
+        class="btn btn-warning me-2"
+      >
+        Edit
+      </button>
+      <button
+        *ngIf="me?.id === post.userId"
+        (click)="deletePost(post.id)"
+        class="btn btn-danger me-2"
+      >
+        Delete
+      </button>
 
-      <button *ngIf="isAuthenticated()" class="btn btn-primary" (click)="likePost(post.id)">Like</button>
-      <button *ngIf="!isAuthenticated()" class="btn btn-secondary" disabled>Login to Like</button>
+      <!-- Like -->
+      <button *ngIf="me" class="btn btn-primary me-2" (click)="like(post)">
+        Like
+      </button>
+      <button *ngIf="!me" class="btn btn-secondary" disabled>
+        Login to Like
+      </button>
 
+      <!-- Komentari -->
       <div class="comments mt-3">
         <h6>Comments:</h6>
-        <div *ngFor="let comment of comments[post.id]" class="comment mb-2">
-          <p>{{ comment.content }} - User ID: {{ comment.authorId }}</p>
+        <div *ngIf="post.comments?.length; else noComments">
+          <div
+            *ngFor="let comment of post.comments; trackBy: trackByCommentId"
+            class="comment mb-2"
+          >
+            <p>{{ comment.content }} <span class="text-muted">— User ID: {{ comment.authorId }}</span></p>
+          </div>
         </div>
+        <ng-template #noComments>
+          <p class="text-muted">No comments yet.</p>
+        </ng-template>
       </div>
 
-      <div *ngIf="isAuthenticated()" class="add-comment mt-3">
-        <textarea [(ngModel)]="newComment[post.id]" rows="2" class="form-control" placeholder="Add a comment..."></textarea>
-        <button class="btn btn-primary mt-2" (click)="addComment(post.id)">Add Comment</button>
+      <!-- Dodavanje komentara -->
+      <div *ngIf="me" class="add-comment mt-3">
+        <textarea
+          [(ngModel)]="newCommentText[post.id]"
+          rows="2"
+          class="form-control"
+          placeholder="Add a comment..."
+        ></textarea>
+        <button
+          class="btn btn-primary mt-2"
+          [disabled]="submittingComment[post.id]"
+          (click)="addComment(post)"
+        >
+          {{ submittingComment[post.id] ? 'Adding...' : 'Add Comment' }}
+        </button>
       </div>
     </div>
   </div>

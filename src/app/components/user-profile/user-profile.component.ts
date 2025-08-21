@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { FollowService } from '../../services/follow.service';
+import { PostService } from '../../services/post.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -10,30 +11,50 @@ import { FollowService } from '../../services/follow.service';
 })
 export class UserProfileComponent implements OnInit {
   user: any;
-  isFollowing: boolean = false;
-  currentUserId: number = 0;
+  isFollowing = false;
+  currentUserId = 0;
+
+  posts: any[] = [];
+  followers: any[] = [];
+  following: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
-    private followService: FollowService
+    private followService: FollowService,
+    private postService: PostService
   ) {}
 
   ngOnInit(): void {
-    const userId = this.route.snapshot.params['id'];
-    this.userService.getUserById(userId).subscribe((user) => {
-      this.user = user;
-      this.checkIfFollowing(userId);
-    });
+    const id = Number(this.route.snapshot.paramMap.get('id'));
 
-    this.userService.getUserProfile().subscribe((profile) => {
-      this.currentUserId = profile.id;
-    });
-  }
+    // Ulogovani korisnik (da znamo ko prati)
+    this.userService.getUserProfile().subscribe({
+      next: (me) => {
+        this.currentUserId = me.id;
+        // Targe­t korisnik
+        this.userService.getUserById(id).subscribe({
+          next: (u) => {
+            this.user = u;
 
-  checkIfFollowing(userId: number): void {
-    this.userService.getFollowing(this.currentUserId).subscribe((following) => {
-      this.isFollowing = following.some((u: any) => u.id === userId);
+            // Followers/following i postovi
+            this.userService.getFollowers(id).subscribe({
+              next: (list) => {
+                this.followers = list;
+                this.isFollowing = !!this.followers.find((x: any) => x.id === this.currentUserId);
+              },
+            });
+
+            this.userService.getFollowing(id).subscribe({
+              next: (list) => (this.following = list),
+            });
+
+            this.postService.getPostsByUser(id).subscribe({
+              next: (list) => (this.posts = list),
+            });
+          },
+        });
+      },
     });
   }
 
@@ -41,7 +62,7 @@ export class UserProfileComponent implements OnInit {
     this.followService.followUser(this.currentUserId, this.user.id).subscribe({
       next: () => {
         this.isFollowing = true;
-        this.user.followersCount += 1;
+        this.user.followersCount = (this.user.followersCount ?? 0) + 1;
       },
       error: (err) => console.error('Failed to follow user', err),
     });
@@ -51,7 +72,7 @@ export class UserProfileComponent implements OnInit {
     this.followService.unfollowUser(this.currentUserId, this.user.id).subscribe({
       next: () => {
         this.isFollowing = false;
-        this.user.followersCount -= 1;
+        this.user.followersCount = Math.max(0, (this.user.followersCount ?? 1) - 1);
       },
       error: (err) => console.error('Failed to unfollow user', err),
     });

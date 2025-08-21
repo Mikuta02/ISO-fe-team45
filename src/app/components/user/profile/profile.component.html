@@ -1,49 +1,156 @@
 <div class="container mt-5" *ngIf="user">
-  <h2>{{ user.firstName }} {{ user.lastName }}'s Profile</h2>
-  <p><strong>Email:</strong> {{ user.email }}</p>
-  <p><strong>Followers:</strong> {{ followers.length }}</p>
-  <p><strong>Following:</strong> {{ following.length }}</p>
+  <h2 class="mb-4">
+    {{ user.firstName }} {{ user.lastName }}
+    <small class="text-muted d-block">Profil</small>
+  </h2>
 
-  <h4>Update Profile</h4>
-  <form (ngSubmit)="updateProfile()">
-    <div class="form-group">
-      <label for="firstName">First Name</label>
-      <input id="firstName" [(ngModel)]="user.firstName" name="firstName" class="form-control" required />
-    </div>
-    <div class="form-group">
-      <label for="lastName">Last Name</label>
-      <input id="lastName" [(ngModel)]="user.lastName" name="lastName" class="form-control" required />
-    </div>
-    <div class="form-group">
-      <label for="address">Address</label>
-      <input id="address" [(ngModel)]="user.address" name="address" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-primary mt-3">Update Profile</button>
-  </form>
+  <div class="row g-4">
+    <!-- Levo: osnovni podaci -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Osnovno</h5>
+          <p class="mb-1"><strong>Email:</strong> {{ user.email }}</p>
+          <p class="mb-1"><strong>Pratilaca:</strong> {{ followers.length }}</p>
+          <p class="mb-3"><strong>Prati:</strong> {{ following.length }}</p>
 
-  <h4 class="mt-5">Change Password</h4>
-  <form (ngSubmit)="changePassword()">
-    <div class="form-group">
-      <label for="newPassword">New Password</label>
-      <input type="password" id="newPassword" [(ngModel)]="passwordChange.newPassword" name="newPassword" class="form-control" required />
+          <h6 class="mt-4">Promena lozinke</h6>
+          <form (ngSubmit)="changePassword()" class="mt-2">
+            <div class="mb-2">
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Trenutna lozinka"
+                [(ngModel)]="passwordChange.currentPassword"
+                name="currentPassword"
+                required
+              />
+            </div>
+            <div class="mb-2">
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Nova lozinka"
+                [(ngModel)]="passwordChange.newPassword"
+                name="newPassword"
+                required
+              />
+            </div>
+            <div class="mb-2">
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Potvrdi lozinku"
+                [(ngModel)]="passwordChange.confirmPassword"
+                name="confirmPassword"
+                required
+              />
+            </div>
+            <button class="btn btn-dark w-100" [disabled]="changingPassword" type="submit">
+              {{ changingPassword ? 'Čuvam...' : 'Promeni lozinku' }}
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label for="confirmPassword">Confirm Password</label>
-      <input type="password" id="confirmPassword" [(ngModel)]="passwordChange.confirmPassword" name="confirmPassword" class="form-control" required />
-    </div>
-    <button type="submit" class="btn btn-secondary mt-3">Change Password</button>
-  </form>
 
-  <h4 class="mt-5">Your Posts</h4>
-  <div *ngIf="userPosts.length; else noPosts">
-    <div *ngFor="let post of userPosts" class="card mt-3">
-      <div class="card-body">
-        <p>{{ post.description }}</p>
-        <small>{{ post.createdAt | date }}</small>
+    <!-- Desno: edit profila + adresa -->
+    <div class="col-lg-8">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Izmena profila</h5>
+          <form (ngSubmit)="updateProfile()" class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Ime</label>
+              <input class="form-control" [(ngModel)]="user.firstName" name="firstName" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Prezime</label>
+              <input class="form-control" [(ngModel)]="user.lastName" name="lastName" required />
+            </div>
+            <div class="col-12">
+              <label class="form-label">Adresa</label>
+              <input class="form-control" [(ngModel)]="user.address" name="address" placeholder="Ulica i broj, grad" />
+            </div>
+            <div class="col-12">
+              <label class="form-label">Email (ne može da se menja)</label>
+              <input class="form-control" [ngModel]="user.email" name="email" disabled />
+            </div>
+            <div class="col-12">
+              <button class="btn btn-primary" [disabled]="savingProfile" type="submit">
+                {{ savingProfile ? 'Čuvam...' : 'Sačuvaj izmene' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Moje objave -->
+      <div class="card shadow-sm mt-4">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Moje objave</h5>
+          <ng-container *ngIf="userPosts?.length; else noPosts">
+            <div class="row g-3">
+              <div class="col-md-6 col-xl-4" *ngFor="let post of userPosts">
+                <div class="card h-100">
+                  <img *ngIf="post.image" [src]="post.image" class="card-img-top" alt="Objava" />
+                  <div class="card-body">
+                    <p class="card-text">{{ post.description }}</p>
+                    <div class="d-flex justify-content-between small text-muted">
+                      <span>❤️ {{ post.likesCount }}</span>
+                      <span *ngIf="post.createdAt">{{ post.createdAt | date:'short' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noPosts>
+            <p class="text-muted mb-0">Nema objava.</p>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Followers / Following -->
+      <div class="row g-4 mt-1">
+        <div class="col-md-6">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title mb-3">Pratioci ({{ followers.length }})</h5>
+              <ng-container *ngIf="followers.length; else noFollowers">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item" *ngFor="let f of followers">
+                    {{ f.firstName }} {{ f.lastName }} &nbsp;
+                    <span class="text-muted small">&lt;{{ f.email }}&gt;</span>
+                  </li>
+                </ul>
+              </ng-container>
+              <ng-template #noFollowers>
+                <p class="text-muted mb-0">Još uvek nemaš pratioce.</p>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title mb-3">Prati ({{ following.length }})</h5>
+              <ng-container *ngIf="following.length; else noFollowing">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item" *ngFor="let u of following">
+                    {{ u.firstName }} {{ u.lastName }} &nbsp;
+                    <span class="text-muted small">&lt;{{ u.email }}&gt;</span>
+                  </li>
+                </ul>
+              </ng-container>
+              <ng-template #noFollowing>
+                <p class="text-muted mb-0">Ne pratiš nikoga.</p>
+              </ng-template>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  <ng-template #noPosts>
-    <p>No posts available</p>
-  </ng-template>
 </div>

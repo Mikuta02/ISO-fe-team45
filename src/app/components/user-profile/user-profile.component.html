@@ -1,9 +1,93 @@
 <div class="container mt-5" *ngIf="user">
-  <h2>{{ user.firstName }} {{ user.lastName }}'s Profile</h2>
-  <p><strong>Email:</strong> {{ user.email }}</p>
-  <p><strong>Followers:</strong> {{ user.followersCount }}</p>
-  <p><strong>Following:</strong> {{ user.followingCount }}</p>
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h2 class="mb-0">
+      {{ user.firstName }} {{ user.lastName }}
+      <small class="text-muted d-block">Profil</small>
+    </h2>
+    <div>
+      <button *ngIf="!isFollowing" (click)="follow()" class="btn btn-primary">Zaprati</button>
+      <button *ngIf="isFollowing" (click)="unfollow()" class="btn btn-secondary">Otprati</button>
+    </div>
+  </div>
 
-  <button *ngIf="!isFollowing" (click)="follow()" class="btn btn-primary mt-3">Follow</button>
-  <button *ngIf="isFollowing" (click)="unfollow()" class="btn btn-secondary mt-3">Unfollow</button>
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Osnovno</h5>
+          <p class="mb-1"><strong>Email:</strong> {{ user.email }}</p>
+          <p class="mb-1" *ngIf="user.address"><strong>Adresa:</strong> {{ user.address }}</p>
+          <p class="mb-1"><strong>Pratilaca:</strong> {{ user.followersCount ?? followers.length }}</p>
+          <p class="mb-0"><strong>Prati:</strong> {{ user.followingCount ?? following.length }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Objave korisnika</h5>
+          <ng-container *ngIf="posts?.length; else noPosts">
+            <div class="row g-3">
+              <div class="col-md-6 col-xl-4" *ngFor="let post of posts">
+                <div class="card h-100">
+                  <img *ngIf="post.image" [src]="post.image" class="card-img-top" alt="Objava" />
+                  <div class="card-body">
+                    <p class="card-text">{{ post.description }}</p>
+                    <div class="d-flex justify-content-between small text-muted">
+                      <span>❤️ {{ post.likesCount }}</span>
+                      <span *ngIf="post.createdAt">{{ post.createdAt | date:'short' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noPosts>
+            <p class="text-muted mb-0">Nema objava.</p>
+          </ng-template>
+        </div>
+      </div>
+
+      <div class="row g-4 mt-1">
+        <div class="col-md-6">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title mb-3">Pratioci ({{ followers.length }})</h5>
+              <ng-container *ngIf="followers.length; else noFollowers">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item" *ngFor="let f of followers">
+                    {{ f.firstName }} {{ f.lastName }}
+                    <span class="text-muted small">&lt;{{ f.email }}&gt;</span>
+                  </li>
+                </ul>
+              </ng-container>
+              <ng-template #noFollowers>
+                <p class="text-muted mb-0">Nema pratilaca.</p>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title mb-3">Prati ({{ following.length }})</h5>
+              <ng-container *ngIf="following.length; else noFollowing">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item" *ngFor="let u of following">
+                    {{ u.firstName }} {{ u.lastName }}
+                    <span class="text-muted small">&lt;{{ u.email }}&gt;</span>
+                  </li>
+                </ul>
+              </ng-container>
+              <ng-template #noFollowing>
+                <p class="text-muted mb-0">Ne prati nikoga.</p>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

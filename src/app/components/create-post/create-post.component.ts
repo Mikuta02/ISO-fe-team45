@@ -14,32 +14,31 @@ export class CreatePostComponent {
 
   constructor(private postService: PostService) {}
 
-  onImageSelected(event: any) {
-    if (event.target.files && event.target.files.length > 0) {
+  onImageSelected(event: any): void {
+    if (event?.target?.files?.length > 0) {
       this.image = event.target.files[0];
     }
   }
 
-  onLocationSelected(event: { latitude: number, longitude: number }) {
-    // Postavljanje latitude i longitude u formi kada korisnik klikne na mapu
+  onLocationSelected(event: { latitude: number; longitude: number }): void {
     this.latitude = event.latitude;
     this.longitude = event.longitude;
   }
 
-
-
-  createPost() {
+  createPost(): void {
     if (!this.description || !this.image) {
-      alert("Please provide all the details");
+      alert('Please provide all the details');
       return;
     }
 
     this.postService.createPost(this.description, this.latitude, this.longitude, this.image)
       .subscribe({
-        next: (response) => {
+        next: (_response: any) => {
           alert('Post created successfully');
+          // opciono: reset form
+          // this.description = ''; this.latitude = 0; this.longitude = 0; this.image = null;
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Error creating post', err);
         }
       });

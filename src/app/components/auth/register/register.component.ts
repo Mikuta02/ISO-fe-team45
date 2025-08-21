@@ -11,11 +11,16 @@ import { UserService } from '../../../services/user.service';
 })
 export class RegisterComponent {
   registerForm: FormGroup;
-  usernameTaken: boolean = false;
+  usernameTaken = false;
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private userService: UserService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private userService: UserService,
+    private router: Router
+  ) {
     this.registerForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -26,32 +31,31 @@ export class RegisterComponent {
   }
 
   onUsernameChange(): void {
-    const username = this.registerForm.get('username')?.value;
+    const username: string = this.registerForm.get('username')?.value;
     if (username) {
       this.userService.isUsernameTaken(username).subscribe({
-        next: (isTaken) => {
+        next: (isTaken: boolean) => {
           this.usernameTaken = isTaken;
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Failed to check username availability', err);
         }
       });
+    } else {
+      this.usernameTaken = false;
     }
   }
 
   onSubmit(): void {
     if (this.registerForm.valid && !this.usernameTaken) {
       this.authService.register(this.registerForm.value).subscribe({
-        next: (response) => {
+        next: (_response: any) => {
           this.successMessage = 'Registration successful! Redirecting to login page...';
-          this.errorMessage = null; // Reset error message
-          setTimeout(() => {
-            this.router.navigate(['/login']);
-          }, 3000); // Automatski prelazak nakon 3 sekunde
+          this.errorMessage = null;
+          setTimeout(() => this.router.navigate(['/login']), 3000);
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Registration failed', err);
-          // Različite poruke na osnovu odgovora sa servera
           if (err.status === 400 && err.error === 'Username already in use') {
             this.errorMessage = 'Username is already taken. Please choose another.';
           } else if (err.status === 500) {
@@ -59,7 +63,7 @@ export class RegisterComponent {
           } else {
             this.errorMessage = 'An unexpected error occurred. Please try again.';
           }
-          this.successMessage = null; // Reset success message
+          this.successMessage = null;
         }
       });
     }
