@@ -22,6 +22,8 @@ import { StompRService } from '@stomp/ng2-stompjs';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {FollowService} from './services/follow.service';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
+import { AdminHomeComponent } from './components/admin-home/admin-home.component';
+import { AnalyticsComponent } from './components/admin/analytics/analytics.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,9 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
     TrendsComponent,
     MapComponent,
     ChatComponent,
-    UserProfileComponent
+    UserProfileComponent,
+    AdminHomeComponent,
+    AnalyticsComponent
   ],
   imports: [
     BrowserModule,

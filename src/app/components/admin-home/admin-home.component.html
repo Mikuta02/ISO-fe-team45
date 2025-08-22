@@ -1,0 +1,11 @@
+<div class="container">
+  <h1>Admin panel</h1>
+  <p>Brzi linkovi</p>
+
+  <div class="grid">
+    <a class="card" *ngFor="let l of links" [routerLink]="l.path">
+      <h3>{{ l.title }}</h3>
+      <small>{{ l.desc }}</small>
+    </a>
+  </div>
+</div>

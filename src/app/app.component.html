@@ -1,41 +1,49 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
     <a class="navbar-brand" href="/">OnlyBuns</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
         <li class="nav-item">
           <a class="nav-link" routerLink="/home">Home</a>
         </li>
+
         <li class="nav-item" *ngIf="!isAuthenticated()">
           <a class="nav-link" routerLink="/login">Login</a>
         </li>
         <li class="nav-item" *ngIf="!isAuthenticated()">
           <a class="nav-link" routerLink="/register">Register</a>
         </li>
+
         <li class="nav-item" *ngIf="isAuthenticated()">
-          <a class="nav-link" routerLink="/profile">Profile</a>
+          <a class="nav-link" routerLink="/posts">All Posts</a>
         </li>
-        <li class="nav-item" *ngIf="isAdmin()">
-          <a class="nav-link" routerLink="/users">Users</a>
+        <li class="nav-item" *ngIf="isAuthenticated() && isAdmin()">
+          <a class="nav-link" [routerLink]="['/users']">All Users</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/posts">Posts</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/map">Care Locations</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/chat">Chat</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/trends']" *ngIf="isAuthenticated()">View Network Trends</a>
+        <li class="nav-item" *ngIf="isAuthenticated() && isAdmin()">
+          <a class="nav-link" [routerLink]="['/trends']">View Network Trends</a>
         </li>
         <li class="nav-item" *ngIf="isAuthenticated()">
           <a class="nav-link" routerLink="/create-post">Create Post</a>
         </li>
+        <li class="nav-item" *ngIf="isAuthenticated()">
+          <a class="nav-link" routerLink="/profile">Profile</a>
+        </li>
+        <li class="nav-item" *ngIf="isAuthenticated()">
+          <a class="nav-link" routerLink="/chat">Chat</a>
+        </li>
+
+        <!-- ADMIN link (vidljiv samo adminima) -->
+        <li class="nav-item" *ngIf="isAdmin()">
+          <a class="nav-link" routerLink="/admin">Admin</a>
+        </li>
+
         <li class="nav-item" *ngIf="isAuthenticated()">
           <a class="nav-link" (click)="logout()">Logout</a>
         </li>

@@ -12,6 +12,9 @@ import {TrendsComponent} from './components/trends/trends.component';
 import {MapComponent} from './components/map/map.component';
 import {ChatComponent} from './components/chat/chat.component';
 import {UserProfileComponent} from './components/user-profile/user-profile.component';
+import {AdminGuard} from './guard/admin.guard';
+import {AnalyticsComponent} from './components/admin/analytics/analytics.component';
+import {AdminHomeComponent} from './components/admin-home/admin-home.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -27,6 +30,12 @@ const routes: Routes = [
   { path: 'map', component: MapComponent }, // samo ulogovani korisnici
   { path: 'user-profile/:id', component: UserProfileComponent },
   { path: 'chat', component: ChatComponent },
+
+  { path: 'admin', component: AdminHomeComponent, canActivate: [AdminGuard] },
+  { path: 'admin/analytics', component: AnalyticsComponent, canActivate: [AdminGuard] },
+
+  // fallback
+  { path: '**', redirectTo: 'home' }
 ];
 
 @NgModule({
