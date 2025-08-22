@@ -1,6 +1,2 @@
-#map {
-  height: 500px;
-  width: 100%;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-}
+:host { display: block; height: 100%; }
+.leaflet-map { height: 500px; min-height: 360px; }

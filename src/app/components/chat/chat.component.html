@@ -47,7 +47,7 @@
           {{ g.name }} <small class="text-muted">#{{g.id}}</small>
         </span>
         <span class="badge rounded-pill text-bg-light"
-              title="members">{{ g.members?.length || 0 }}</span>
+              title="members">{{ g.members.length || 0 }}</span>
       </button>
     </div>
     <ng-template #noGroups><p>You are not a member of any group.</p></ng-template>
