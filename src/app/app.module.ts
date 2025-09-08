@@ -24,6 +24,7 @@ import {FollowService} from './services/follow.service';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { AdminHomeComponent } from './components/admin-home/admin-home.component';
 import { AnalyticsComponent } from './components/admin/analytics/analytics.component';
+import { FollowButtonComponent } from './components/follow-button/follow-button.component';
 
 @NgModule({
   declarations: [
@@ -42,12 +43,13 @@ import { AnalyticsComponent } from './components/admin/analytics/analytics.compo
     ChatComponent,
     UserProfileComponent,
     AdminHomeComponent,
-    AnalyticsComponent
+    AnalyticsComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
+    FollowButtonComponent,
     FormsModule,
     NgbModule
   ],

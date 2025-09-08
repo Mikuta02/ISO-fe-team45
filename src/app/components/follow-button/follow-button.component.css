@@ -1,0 +1,2 @@
+button { padding:.5rem .75rem; border-radius:.5rem; border:1px solid #ccc; background:#fff; cursor:pointer; }
+button[disabled] { opacity:.5; cursor:not-allowed; }

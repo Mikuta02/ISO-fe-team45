@@ -1,0 +1,9 @@
+<button [disabled]="loading()" (click)="toggle()">
+  <ng-container *ngIf="!status(); else loaded">Učitavanje...</ng-container>
+  <ng-template #loaded>
+    <span *ngIf="status()?.following">Otprati</span>
+    <span *ngIf="!status()?.following">Prati</span>
+    <small style="opacity:.7;margin-left:.5rem">({{status()?.followersCount}})</small>
+  </ng-template>
+</button>
+<div *ngIf="error()" style="color:#c00;margin-top:.25rem">{{error()}}</div>

@@ -5,8 +5,7 @@
       <small class="text-muted d-block">Profil</small>
     </h2>
     <div>
-      <button *ngIf="!isFollowing" (click)="follow()" class="btn btn-primary">Zaprati</button>
-      <button *ngIf="isFollowing" (click)="unfollow()" class="btn btn-secondary">Otprati</button>
+      <app-follow-button [targetUserId]="profileUserId"></app-follow-button>
     </div>
   </div>
 

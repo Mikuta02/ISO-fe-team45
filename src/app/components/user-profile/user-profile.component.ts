@@ -8,11 +8,13 @@ import { PostService } from '../../services/post.service';
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.css'],
+
 })
 export class UserProfileComponent implements OnInit {
   user: any;
   isFollowing = false;
   currentUserId = 0;
+  profileUserId = 0;
 
   posts: any[] = [];
   followers: any[] = [];
@@ -27,7 +29,7 @@ export class UserProfileComponent implements OnInit {
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-
+    this.profileUserId = id;
     // Ulogovani korisnik (da znamo ko prati)
     this.userService.getUserProfile().subscribe({
       next: (me) => {
@@ -55,26 +57,6 @@ export class UserProfileComponent implements OnInit {
           },
         });
       },
-    });
-  }
-
-  follow(): void {
-    this.followService.followUser(this.currentUserId, this.user.id).subscribe({
-      next: () => {
-        this.isFollowing = true;
-        this.user.followersCount = (this.user.followersCount ?? 0) + 1;
-      },
-      error: (err) => console.error('Failed to follow user', err),
-    });
-  }
-
-  unfollow(): void {
-    this.followService.unfollowUser(this.currentUserId, this.user.id).subscribe({
-      next: () => {
-        this.isFollowing = false;
-        this.user.followersCount = Math.max(0, (this.user.followersCount ?? 1) - 1);
-      },
-      error: (err) => console.error('Failed to unfollow user', err),
     });
   }
 }
