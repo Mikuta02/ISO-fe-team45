@@ -20,8 +20,8 @@ export class PostService {
   createPost(description: string, latitude: number, longitude: number, image: File): Observable<any> {
     const formData = new FormData();
     formData.append('description', description);
-    formData.append('latitude', latitude.toString());
-    formData.append('longitude', longitude.toString());
+    formData.append('locationLatitude', latitude.toString());
+    formData.append('locationLongitude', longitude.toString());
     formData.append('image', image);
     return this.http.post(`${this.apiUrl}`, formData);
   }

@@ -1,49 +1,133 @@
-<div class="container mt-5">
-  <h2>Network Trends</h2>
-  <p><strong>Total Posts:</strong> {{ totalPosts }}</p>
-  <p><strong>Posts in the Last Month:</strong> {{ postsLastMonth }}</p>
+<div class="trends-page">
 
-  <!-- Prikaz najpopularnijih objava ove nedelje -->
-  <h4>Top 5 Liked Posts This Week</h4>
-  <div *ngIf="topPostsThisWeek.length; else noWeeklyPosts">
-    <div *ngFor="let post of topPostsThisWeek" class="card mt-3">
-      <img [src]="post.image" class="card-img-top" alt="Post Image" style="height: 200px; object-fit: cover;">
-      <div class="card-body">
-        <h5 class="card-title">{{ post.description }}</h5>
-        <p class="card-text">Likes: {{ post.likesCount }}</p>
-      </div>
+  <!-- Header -->
+  <header class="header">
+    <div>
+      <h1>Trendovi mreže</h1>
+      <p class="subtitle">Analitika OnlyBuns zajednice u poslednje vreme</p>
     </div>
-  </div>
-  <ng-template #noWeeklyPosts>
-    <p>No top posts available for this week.</p>
-  </ng-template>
+    <button class="refresh" (click)="load()" aria-label="Osveži">
+      ↻ Osveži
+    </button>
+  </header>
 
-  <!-- Prikaz najpopularnijih objava svih vremena -->
-  <h4 class="mt-4">Top 10 Posts of All Time</h4>
-  <div *ngIf="topPostsAllTime.length; else noAllTimePosts">
-    <div *ngFor="let post of topPostsAllTime" class="card mt-3">
-      <img [src]="post.image" class="card-img-top" alt="Post Image" style="height: 200px; object-fit: cover;">
-      <div class="card-body">
-        <h5 class="card-title">{{ post.description }}</h5>
-        <p class="card-text">Likes: {{ post.likesCount }}</p>
-        <p class="card-text"><small>Posted by User ID: {{ post.userId }}</small></p>
-      </div>
+  <!-- Error -->
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <!-- Skeleton Loading -->
+  <ng-container *ngIf="loading">
+    <div class="kpi-grid">
+      <div class="kpi-card skeleton"></div>
+      <div class="kpi-card skeleton"></div>
     </div>
-  </div>
-  <ng-template #noAllTimePosts>
-    <p>No top posts of all time available.</p>
-  </ng-template>
+    <div class="grid two">
+      <div class="card skeleton tall"></div>
+      <div class="card skeleton tall"></div>
+    </div>
+    <div class="card skeleton"></div>
+  </ng-container>
 
-  <!-- Prikaz top korisnika po lajkovima ove nedelje -->
-  <h4 class="mt-4">Top 10 Users by Likes Given This Week</h4>
-  <div *ngIf="topUsersByLikes.length; else noTopUsers">
-    <ul class="list-group">
-      <li *ngFor="let user of topUsersByLikes" class="list-group-item">
-        User ID: {{ user.userId }} - Likes Given: {{ user.likesGiven }}
-      </li>
-    </ul>
-  </div>
-  <ng-template #noTopUsers>
-    <p>No user data available for this week.</p>
-  </ng-template>
+  <!-- Content -->
+  <ng-container *ngIf="!loading && trends">
+    <!-- KPI tiles -->
+    <section class="kpi-grid">
+      <article class="kpi-card">
+        <div class="kpi-title">Ukupan broj objava</div>
+        <div class="kpi-value">{{ trends.totalPosts | number }}</div>
+      </article>
+      <article class="kpi-card">
+        <div class="kpi-title">Objava u poslednjih 30 dana</div>
+        <div class="kpi-value">{{ trends.postsLastMonth | number }}</div>
+      </article>
+    </section>
+
+    <div class="grid two">
+      <!-- Top 5 u poslednjih 7 dana -->
+      <section class="card">
+        <div class="card-header">
+          <h2>Top 5 objava (7 dana)</h2>
+          <span class="hint">Najviše lajkova među novijim objavama</span>
+        </div>
+        <ul class="post-list">
+          <li *ngFor="let p of trends.topPostsLastWeek; trackBy: trackByPost" class="post-item">
+            <img class="thumb" [src]="p.imageUrl || 'assets/placeholders/post.webp'" alt="post image" />
+            <div class="post-meta">
+              <div class="title">
+                {{ p.description || 'Bez opisa' }}
+              </div>
+              <div class="meta-line">
+                <span class="chip">❤ {{ p.likesCount || 0 }}</span>
+                <span class="dot"></span>
+                <span class="muted"><a class="btn-link" [routerLink]="['/user-profile', p.authorUsername]">Autor</a></span>
+                <span class="dot"></span>
+                <span class="muted">{{ prettyDate(p.createdAt) }}</span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Top 10 ikada -->
+      <section class="card">
+        <div class="card-header">
+          <h2>Top 10 objava (ikada)</h2>
+          <span class="hint">Apsolutni rekorderi po lajkovima</span>
+        </div>
+        <ol class="post-list ranked">
+          <li *ngFor="let p of trends.topPostsAllTime; index as i; trackBy: trackByPost" class="post-item">
+            <span class="rank-badge">{{ i + 1 }}</span>
+            <img class="thumb" [src]="p.imageUrl || 'assets/placeholders/post.webp'" alt="post image" />
+            <div class="post-meta">
+              <div class="title">
+                {{ p.description || 'Bez opisa' }}
+              </div>
+              <div class="meta-line">
+                <span class="chip">❤ {{ p.likesCount || 0 }}</span>
+                <span class="dot"></span>
+                <span class="muted"><a class="btn-link" [routerLink]="['/user-profile', p.authorUsername]">Autor</a></span>
+                <span class="dot"></span>
+                <span class="muted">{{ prettyDate(p.createdAt) }}</span>
+              </div>
+            </div>
+          </li>
+        </ol>
+      </section>
+    </div>
+
+    <!-- Top 10 „lajkera“ -->
+    <section class="card">
+      <div class="card-header">
+        <h2>Top 10 „lajkera“ (7 dana)</h2>
+        <span class="hint">Nalozi koji su podelili najviše lajkova</span>
+      </div>
+      <table class="table">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>Korisnik</th>
+          <th>Likes dato</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let u of trends.topUsersLastWeek; index as i; trackBy: trackByUser">
+          <td class="rank-col">{{ i + 1 }}</td>
+          <td>
+            <div class="user-cell">
+              <div class="avatar">{{ (u.username || 'U')[0] | uppercase }}</div>
+              <div>
+                <div class="username">&#64;{{ u.username || ('user-' + u.userId) }}</div>
+                <div class="muted small">ID: {{ u.userId }}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="chip strong">❤ {{ u.likesGiven }}</span></td>
+          <td class="actions"><a class="btn-link" [routerLink]="['/user-profile', u.userId]">Profil</a></td>
+        </tr>
+        </tbody>
+      </table>
+    </section>
+  </ng-container>
 </div>

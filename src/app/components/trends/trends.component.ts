@@ -1,36 +1,48 @@
-import { Component, OnInit } from '@angular/core';
-import { TrendService } from '../../services/trend.service';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { TrendService, NetworkTrendsView, PostView, UserLikesView } from '../../services/trend.service';
 
 @Component({
   selector: 'app-trends',
   templateUrl: './trends.component.html',
-  styleUrls: ['./trends.component.css'],
+  styleUrls: ['./trends.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TrendsComponent implements OnInit {
-  totalPosts: number = 0;
-  postsLastMonth: number = 0;
-  topPostsThisWeek: any[] = [];
-  topPostsAllTime: any[] = [];
-  topUsersByLikes: any[] = [];
+  trends?: NetworkTrendsView;
+  loading = true;
+  error?: string;
 
-  constructor(private trendService: TrendService) {}
+  constructor(private readonly trendService: TrendService,
+              private readonly cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    this.loadTrends();
+    this.load();
   }
 
-  loadTrends(): void {
+  load(): void {
+    this.loading = true;
+    this.error = undefined;
     this.trendService.getNetworkTrends().subscribe({
       next: (data) => {
-        this.totalPosts = data.totalPosts;
-        this.postsLastMonth = data.postsLastMonth;
-        this.topPostsThisWeek = data.topPostsLastWeek; // prilagodjeno polje sa backend podacima
-        this.topPostsAllTime = data.topPostsAllTime;
-        this.topUsersByLikes = data.topUsersLastWeek;
+        this.trends = data;
+        this.loading = false;
+        this.cdr.markForCheck(); // bitno zbog OnPush
       },
       error: (err) => {
-        console.error('Failed to load trends data', err);
+        console.error(err);
+        this.error = 'Došlo je do greške pri učitavanju trendova. Pokušaj ponovo.';
+        this.loading = false;
+        this.cdr.markForCheck();
       }
     });
+  }
+
+  trackByPost = (_: number, p: PostView) => p.id;
+  trackByUser = (_: number, u: UserLikesView) => u.userId;
+
+  prettyDate(iso?: string): string {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
   }
 }

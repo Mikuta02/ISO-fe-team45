@@ -35,11 +35,14 @@ export class CreatePostComponent {
       .subscribe({
         next: (_response: any) => {
           alert('Post created successfully');
+          console.log('OK', _response);
           // opciono: reset form
           // this.description = ''; this.latitude = 0; this.longitude = 0; this.image = null;
         },
         error: (err: any) => {
           console.error('Error creating post', err);
+          console.error('status:', err.status);
+          console.error('payload:', err.error); // ovde je problem+json
         }
       });
   }
