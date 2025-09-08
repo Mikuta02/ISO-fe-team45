@@ -1,4 +1,75 @@
 <div class="container">
   <h1>Analitika aplikacije</h1>
-  <p>Ovo je placeholder. Ovde kasnije dodajte grafikone (nedeljno, mesečno, godišnje) i radijalni prikaz procenta korisnika (3.14).</p>
+
+  <div *ngIf="loading" class="box">Učitavanje...</div>
+  <div *ngIf="error" class="box error">{{ error }}</div>
+
+  <div *ngIf="!loading && !error">
+
+    <section class="grid">
+      <div class="card">
+        <h2>Nedeljni pregled (poslednjih 8)</h2>
+        <table>
+          <thead><tr><th>Period</th><th>Objave</th><th>Bar</th><th>Komentari</th><th>Bar</th></tr></thead>
+          <tbody>
+          <tr *ngFor="let t of weekly">
+            <td>{{t.period}}</td>
+            <td>{{t.posts}}</td>
+            <td><div class="bar"><span [style.width]="barWidth(t.posts, maxValue(weekly,'posts'))"></span></div></td>
+            <td>{{t.comments}}</td>
+            <td><div class="bar"><span [style.width]="barWidth(t.comments, maxValue(weekly,'comments'))"></span></div></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>Mesečni pregled (poslednjih 12)</h2>
+        <table>
+          <thead><tr><th>Period</th><th>Objave</th><th>Bar</th><th>Komentari</th><th>Bar</th></tr></thead>
+          <tbody>
+          <tr *ngFor="let t of monthly">
+            <td>{{t.period}}</td>
+            <td>{{t.posts}}</td>
+            <td><div class="bar"><span [style.width]="barWidth(t.posts, maxValue(monthly,'posts'))"></span></div></td>
+            <td>{{t.comments}}</td>
+            <td><div class="bar"><span [style.width]="barWidth(t.comments, maxValue(monthly,'comments'))"></span></div></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>Godišnji pregled (poslednjih 5)</h2>
+        <table>
+          <thead><tr><th>Period</th><th>Objave</th><th>Bar</th><th>Komentari</th><th>Bar</th></tr></thead>
+          <tbody>
+          <tr *ngFor="let t of yearly">
+            <td>{{t.period}}</td>
+            <td>{{t.posts}}</td>
+            <td><div class="bar"><span [style.width]="barWidth(t.posts, maxValue(yearly,'posts'))"></span></div></td>
+            <td>{{t.comments}}</td>
+            <td><div class="bar"><span [style.width]="barWidth(t.comments, maxValue(yearly,'comments'))"></span></div></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>Raspodela korisnika</h2>
+        <div class="donut-wrap">
+          <div class="donut" [ngStyle]="donutStyle"></div>
+          <div class="legend">
+            <div><span class="dot dot-a"></span> Objavili bar jednu objavu — {{posters}} ({{postersPct | number:'1.0-2'}}%)</div>
+            <div><span class="dot dot-b"></span> Samo komentari — {{commentersOnly}} ({{commentersOnlyPct | number:'1.0-2'}}%)</div>
+            <div><span class="dot dot-c"></span> Bez aktivnosti — {{inactive}} ({{inactivePct | number:'1.0-2'}}%)</div>
+            <div class="muted">Ukupno korisnika: {{totalUsers}}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
 </div>
