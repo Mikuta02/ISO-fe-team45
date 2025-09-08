@@ -49,7 +49,7 @@ export class PostService {
   }
 
   // >>> Vraćeno zbog map.component.ts
-  getMapData(latitude: number, longitude: number): Observable<any> {
+  getMapData(latitude: number | undefined, longitude: number | undefined): Observable<any> {
     const params = new HttpParams()
       .set('latitude', String(latitude))
       .set('longitude', String(longitude));
@@ -60,9 +60,10 @@ export class PostService {
   getNearbyPosts(lat?: number, lng?: number, radiusKm?: number): Observable<any> {
     let params = new HttpParams();
     if (lat !== undefined && lng !== undefined) {
-      params = params.set('lat', String(lat)).set('lng', String(lng));
+      params = params.set('latitude', String(lat)).set('longitude', String(lng));
     }
     if (radiusKm !== undefined) params = params.set('radiusKm', String(radiusKm));
+    console.log('Fetching nearby posts with params:', params.toString());
     return this.http.get(`${this.apiUrl}/nearby`, { params });
   }
 }

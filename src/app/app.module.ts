@@ -25,6 +25,7 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
 import { AdminHomeComponent } from './components/admin-home/admin-home.component';
 import { AnalyticsComponent } from './components/admin/analytics/analytics.component';
 import { FollowButtonComponent } from './components/follow-button/follow-button.component';
+import './shared/leaflet-icon-fix';
 
 @NgModule({
   declarations: [

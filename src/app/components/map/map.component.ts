@@ -8,11 +8,8 @@ type MapResponse = {
   nearbyPosts: Array<{
     id: number;
     description: string;
-    image: string;
     locationLatitude: number;
     locationLongitude: number;
-    userId: number;
-    likesCount: number;
   }>;
   nearbyLocations: Array<{
     name: string;
@@ -27,102 +24,77 @@ type MapResponse = {
   styleUrls: ['./map.component.css']
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('mapEl', { static: false }) mapEl!: ElementRef<HTMLDivElement>;
-
+  @ViewChild('mapEl', { static: true }) mapEl!: ElementRef<HTMLDivElement>;
   private map?: L.Map;
-  private postsLayer = L.layerGroup();
-  private careLayer = L.layerGroup();
-  private allLayer = L.featureGroup(); // za fitBounds
+  private resizeObs?: ResizeObserver;
   loading = false;
 
   constructor(private postService: PostService) {}
 
   ngAfterViewInit(): void {
-    // pripremi default ikonice (ako već nemaš globalno)
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: 'assets/leaflet/marker-icon-2x.png',
-      iconUrl: 'assets/leaflet/marker-icon.png',
-      shadowUrl: 'assets/leaflet/marker-shadow.png'
-    });
-
-    // inicijalizuj mapu
-    this.map = L.map(this.mapEl.nativeElement, {
-      center: [45.2671, 19.8335],
-      zoom: 13
-    });
+    this.map = L.map(this.mapEl.nativeElement, { zoomControl: true });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(this.map);
 
-    // dodaj slojeve
-    this.postsLayer.addTo(this.map);
-    this.careLayer.addTo(this.map);
-    this.allLayer.addTo(this.map);
+    this.resizeObs = new ResizeObserver(() => this.map?.invalidateSize());
+    this.resizeObs.observe(this.mapEl.nativeElement);
 
-    // učitaj podatke i iscrtaj
-    this.loadAndRender();
-    setTimeout(() => this.map?.invalidateSize(), 0); // u slučaju layout promene
+    // geolokacija (fallback na backend center)
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => this.loadData(pos.coords.latitude, pos.coords.longitude),
+        () => this.loadData(),
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    } else {
+      this.loadData();
+    }
   }
 
-  ngOnDestroy(): void {
-    this.map?.remove();
-  }
-
-  private loadAndRender(): void {
+  private loadData(lat?: number, lng?: number) {
     this.loading = true;
-
-    // ako imaš centar od korisnika/profila, prosledi kao parametre
-    this.postService.getMapData(45.2671, 19.8335).subscribe({
-      next: (resp: MapResponse) => {
+    this.postService.getMapData(lat, lng).subscribe({
+      next: (data: MapResponse) => {
         this.loading = false;
-        if (!this.map) return;
 
-        // centriraj na serverom vraćen centar
-        this.map.setView([resp.centerLatitude, resp.centerLongitude], 13);
+        const centerLat = lat ?? data.centerLatitude ?? 44.787; // Beograd fallback
+        const centerLng = lng ?? data.centerLongitude ?? 20.457;
+        this.map!.setView([centerLat, centerLng], 12);
 
-        // očisti stare markere
-        this.postsLayer.clearLayers();
-        this.careLayer.clearLayers();
-        this.allLayer.clearLayers();
+        const postLayer = L.layerGroup().addTo(this.map!);
+        const careLayer = L.layerGroup().addTo(this.map!);
 
-        // --- POSTS ---
-        resp.nearbyPosts?.forEach(p => {
-          const marker = L.marker([p.locationLatitude, p.locationLongitude])
-            .bindPopup(`
-              <div style="max-width:220px">
-                <b>Post #${p.id}</b><br/>
-                ${p.description ?? ''}<br/>
-                <small>Likes: ${p.likesCount}</small><br/>
-                <img src="${p.image}" alt="img" style="width:100%;margin-top:6px;border-radius:6px"/>
-              </div>
-            `);
-          marker.addTo(this.postsLayer);
-          this.allLayer.addLayer(marker);
+        // Objave
+        data.nearbyPosts?.forEach((p) => {
+          const m = L.marker([p.locationLatitude, p.locationLongitude]);
+          m.bindPopup(`<b>Objava</b><br>${p.description ?? ''}`);
+          m.addTo(postLayer);
         });
 
-        // --- CARE LOCATIONS ---
-        const careIcon = L.divIcon({
-          className: 'care-pin',
-          html: '🐰',
-          iconSize: [24, 24],
-          iconAnchor: [12, 12]
+        // Lokacije za zečeve (circle markers)
+        data.nearbyLocations?.forEach((loc) => {
+          const c = L.circleMarker([loc.latitude, loc.longitude], { radius: 8 });
+          c.bindPopup(`<b>${loc.name}</b><br>Usluge za brigu o zečevima`);
+          c.addTo(careLayer);
         });
 
-        resp.nearbyLocations?.forEach(l => {
-          const m = L.marker([l.latitude, l.longitude], { icon: careIcon })
-            .bindPopup(`<b>${l.name}</b>`);
-          m.addTo(this.careLayer);
-          this.allLayer.addLayer(m);
-        });
+        // Kontrola slojeva
+        L.control.layers(undefined, {
+          'Objave': postLayer,
+          'Lokacije za zečeve': careLayer
+        }, { collapsed: false }).addTo(this.map!);
 
-        // fituj granice (ako ima markera)
-        const bounds = this.allLayer.getBounds();
+        // Fit bounds
+        const bounds = L.latLngBounds([]);
+        postLayer.eachLayer(layer => bounds.extend((layer as any).getLatLng?.() ?? (layer as any).getBounds?.()));
+        careLayer.eachLayer(layer => bounds.extend((layer as any).getLatLng?.() ?? (layer as any).getBounds?.()));
         if (bounds.isValid()) {
-          this.map.fitBounds(bounds.pad(0.2));
+          this.map!.fitBounds(bounds.pad(0.2));
         }
 
-        // sigurnosno
         setTimeout(() => this.map?.invalidateSize(), 0);
       },
       error: (err) => {
@@ -130,5 +102,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         console.error('Failed to load map data', err);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.resizeObs?.disconnect();
+    this.map?.remove();
   }
 }

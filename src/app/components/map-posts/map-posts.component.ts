@@ -112,7 +112,7 @@ export class MapPostsComponent implements AfterViewInit, OnDestroy {
   }
 
   private getNearbyPosts(): void {
-    this.postService.getNearbyPosts().subscribe({
+    this.postService.getNearbyPosts(this.initialLatitude, this.initialLongitude, 20).subscribe({
       next: (data: any[]) => {
         this.posts = data || [];
         this.addMarkersToMap();
