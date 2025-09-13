@@ -10,6 +10,6 @@ export class AdminHomeComponent {
     { title: 'Sve objave', desc: 'Lista svih objava korisnika', path: '/posts' },
     { title: 'Trendovi mreže', desc: 'Popularno i trendovi', path: '/trends' },
     { title: 'Analitika aplikacije', desc: 'Grafici i KPI za admina', path: '/admin/analytics' },
-    { title: 'Svi profili', desc: 'Pregled svih registrovanih korisnika', path: '/users' },
+    { title: 'Svi profili', desc: 'Pregled svih registrovanih korisnika', path: '/user-list' },
   ];
 }

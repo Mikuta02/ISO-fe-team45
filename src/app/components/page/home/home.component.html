@@ -23,7 +23,7 @@
       </h2>
       <div id="collapseFollowing" class="accordion-collapse collapse show" aria-labelledby="headingFollowing" data-bs-parent="#homeAccordion">
         <div class="accordion-body">
-          <app-posts onlyFollowing="true"></app-posts>
+          <app-posts [onlyFollowing]="true"></app-posts>
         </div>
       </div>
     </div>
@@ -37,7 +37,7 @@
       </h2>
       <div id="collapseTrending" class="accordion-collapse collapse" aria-labelledby="headingTrending" data-bs-parent="#homeAccordion">
         <div class="accordion-body">
-          <app-posts trending="true"></app-posts>
+          <app-posts [trending]="true"></app-posts>
         </div>
       </div>
     </div>

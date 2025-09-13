@@ -26,6 +26,7 @@ import { AdminHomeComponent } from './components/admin-home/admin-home.component
 import { AnalyticsComponent } from './components/admin/analytics/analytics.component';
 import { FollowButtonComponent } from './components/follow-button/follow-button.component';
 import './shared/leaflet-icon-fix';
+import { PostDetailsComponent } from './components/post-details/post-details.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import './shared/leaflet-icon-fix';
     UserProfileComponent,
     AdminHomeComponent,
     AnalyticsComponent,
+    PostDetailsComponent,
   ],
   imports: [
     BrowserModule,

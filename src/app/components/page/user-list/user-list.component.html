@@ -1,36 +1,49 @@
 <div class="container mt-4">
-  <h3>Registered Users</h3>
+  <h2>Registered users</h2>
 
-  <form class="row g-2 mb-3" (ngSubmit)="applyFilters()">
-    <div class="col-md-3">
-      <input class="form-control" [(ngModel)]="searchParams.firstName" name="firstName" placeholder="First name" />
+  <!-- Filters -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row g-2">
+        <div class="col-md-3">
+          <input type="text" class="form-control" [(ngModel)]="searchParams.firstName" placeholder="First name">
+        </div>
+        <div class="col-md-3">
+          <input type="text" class="form-control" [(ngModel)]="searchParams.lastName" placeholder="Last name">
+        </div>
+        <div class="col-md-3">
+          <input type="text" class="form-control" [(ngModel)]="searchParams.email" placeholder="Email">
+        </div>
+        <div class="col-md-1">
+          <input type="number" class="form-control" [(ngModel)]="searchParams.minPosts" placeholder="Min posts">
+        </div>
+        <div class="col-md-1">
+          <input type="number" class="form-control" [(ngModel)]="searchParams.maxPosts" placeholder="Max posts">
+        </div>
+        <div class="col-md-1 d-grid">
+          <button class="btn btn-primary" (click)="applyFilters()">Search</button>
+        </div>
+        <div class="col-md-1 d-grid">
+          <button class="btn btn-outline-secondary" (click)="clearFilters()">Clear</button>
+        </div>
+      </div>
     </div>
-    <div class="col-md-3">
-      <input class="form-control" [(ngModel)]="searchParams.lastName" name="lastName" placeholder="Last name" />
-    </div>
-    <div class="col-md-3">
-      <input class="form-control" [(ngModel)]="searchParams.email" name="email" placeholder="Email" />
-    </div>
-    <div class="col-md-1">
-      <input type="number" class="form-control" [(ngModel)]="searchParams.minPosts" name="minPosts" placeholder="Min posts" />
-    </div>
-    <div class="col-md-1">
-      <input type="number" class="form-control" [(ngModel)]="searchParams.maxPosts" name="maxPosts" placeholder="Max posts" />
-    </div>
-    <div class="col-md-1 d-grid">
-      <button class="btn btn-primary" type="submit">Filter</button>
-    </div>
-    <div class="col-md-1 d-grid">
-      <button type="button" class="btn btn-outline-secondary" (click)="clearFilters()">Clear</button>
-    </div>
-  </form>
-
-  <div class="mb-2">
-    <button class="btn btn-sm btn-outline-dark me-2" (click)="sortUsers('email')">Sort by Email</button>
-    <button class="btn btn-sm btn-outline-dark me-2" (click)="sortUsers('followingCount')">Sort by Following</button>
-    <button class="btn btn-sm btn-outline-dark" (click)="toggleOrder()">Toggle {{ order | uppercase }}</button>
   </div>
 
+  <!-- Sort controls -->
+  <div class="d-flex gap-2 mb-2">
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-outline-secondary" [class.active]="searchParams.sortBy==='email'"
+              (click)="sortUsers('email')">Sort by Email</button>
+      <button type="button" class="btn btn-outline-secondary" [class.active]="searchParams.sortBy==='followingCount'"
+              (click)="sortUsers('followingCount')">Sort by Following</button>
+    </div>
+    <button class="btn btn-outline-secondary" (click)="toggleOrder()">
+      Order: {{ searchParams.order?.toUpperCase() }}
+    </button>
+  </div>
+
+  <!-- Users list -->
   <div class="list-group">
     <div class="list-group-item" *ngFor="let u of users">
       <div class="d-flex justify-content-between">
@@ -39,15 +52,20 @@
           <div class="text-muted small">{{ u.email }}</div>
         </div>
         <div class="text-end small">
-          <div>Posts: {{ u.postsCount ?? u.postCount ?? 0 }}</div>
+          <div>Posts: {{ u.postsCount ?? 0 }}</div>
           <div>Following: {{ u.followingCount ?? 0 }}</div>
+          <div>Followers: {{ u.followersCount ?? 0 }}</div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="mt-3 d-flex justify-content-between">
-    <button class="btn btn-outline-secondary" (click)="prevPage()">Prev</button>
-    <button class="btn btn-outline-secondary" (click)="nextPage()">Next</button>
+  <!-- Pagination -->
+  <div class="mt-3 d-flex justify-content-between align-items-center">
+    <div>Total: {{ totalElements }} | Pages: {{ totalPages }}</div>
+    <div class="btn-group">
+      <button class="btn btn-outline-secondary" [disabled]="searchParams.page===0" (click)="prevPage()">Prev</button>
+      <button class="btn btn-outline-secondary" [disabled]="searchParams.page+1>=totalPages" (click)="nextPage()">Next</button>
+    </div>
   </div>
 </div>

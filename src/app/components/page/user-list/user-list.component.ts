@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../../services/user.service';
+import { UserQueryService } from '../../../services/user-query.service';
 
 @Component({
   selector: 'app-user-list',
@@ -9,58 +9,77 @@ import { UserService } from '../../../services/user.service';
 export class UserListComponent implements OnInit {
   users: any[] = [];
 
-  // koristimo firstName/lastName u UI; mapiraćemo na API parametre u servisu
+  // filter/sort/pagination state
   searchParams: {
     firstName?: string;
     lastName?: string;
     email?: string;
-    minPosts?: number;
-    maxPosts?: number;
-    page?: number;
-    size?: number;
-  } = { page: 0, size: 5 };
+    minPosts?: number | null;
+    maxPosts?: number | null;
+    sortBy?: 'followingCount' | 'email';
+    order?: 'asc' | 'desc';
+    page: number;
+    size: number;
+  } = {
+    page: 0,
+    size: 5,
+    sortBy: 'email',
+    order: 'asc',
+    minPosts: null,
+    maxPosts: null
+  };
 
-  sortBy: 'followingCount' | 'email' = 'email';
-  order: 'asc' | 'desc' = 'asc';
+  totalElements = 0;
+  totalPages = 0;
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserQueryService) {}
 
   ngOnInit(): void {
     this.getAllUsers();
   }
 
   getAllUsers(): void {
-    this.userService.getAllUsers(this.searchParams).subscribe({
-      next: (data: any) => {
-        this.users = Array.isArray(data) ? data : (data.content ?? []);
+    const params = {
+      ...this.searchParams,
+      // coerce nulls to undefined so they don't appear in query
+      minPosts: this.searchParams.minPosts ?? undefined,
+      maxPosts: this.searchParams.maxPosts ?? undefined
+    };
+    this.userService.getUsersPaged(params).subscribe({
+      next: (page: any) => {
+        this.users = page?.content ?? [];
+        this.totalElements = page?.totalElements ?? 0;
+        this.totalPages = page?.totalPages ?? 0;
       },
-      error: (err: any) => console.error('Error fetching users', err)
+      error: (err) => console.error('Error fetching users', err)
     });
   }
 
   sortUsers(sortBy: 'followingCount' | 'email'): void {
-    this.sortBy = sortBy;
-    this.userService.getAllUsersSorted(this.sortBy, this.order, this.searchParams.page ?? 0, this.searchParams.size ?? 5)
-      .subscribe({
-        next: (data: any) => {
-          this.users = Array.isArray(data) ? data : (data.content ?? []);
-        },
-        error: (err: any) => console.error('Error sorting users', err)
-      });
-  }
-
-  toggleOrder(): void {
-    this.order = this.order === 'asc' ? 'desc' : 'asc';
-    this.sortUsers(this.sortBy);
-  }
-
-  nextPage(): void {
-    this.searchParams.page = (this.searchParams.page ?? 0) + 1;
+    this.searchParams.sortBy = sortBy;
     this.getAllUsers();
   }
 
+  toggleOrder(): void {
+    this.searchParams.order = this.searchParams.order === 'asc' ? 'desc' : 'asc';
+    this.getAllUsers();
+  }
+
+  nextPage(): void {
+    if (this.searchParams.page + 1 < this.totalPages) {
+      this.searchParams.page += 1;
+      this.getAllUsers();
+    }
+  }
+
   prevPage(): void {
-    const p = this.searchParams.page ?? 0;
+    if (this.searchParams.page > 0) {
+      this.searchParams.page -= 1;
+      this.getAllUsers();
+    }
+  }
+
+  goToPage(p: number): void {
     this.searchParams.page = p > 0 ? p - 1 : 0;
     this.getAllUsers();
   }
@@ -71,7 +90,7 @@ export class UserListComponent implements OnInit {
   }
 
   clearFilters(): void {
-    this.searchParams = { page: 0, size: 5 };
+    this.searchParams = { page: 0, size: 5, sortBy: 'email', order: 'asc', minPosts: null, maxPosts: null };
     this.getAllUsers();
   }
 }

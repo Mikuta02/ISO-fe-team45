@@ -9,10 +9,12 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
+        <!-- Svima dostupan -->
         <li class="nav-item">
           <a class="nav-link" routerLink="/home">Home</a>
         </li>
 
+        <!-- Guest -->
         <li class="nav-item" *ngIf="!isAuthenticated()">
           <a class="nav-link" routerLink="/login">Login</a>
         </li>
@@ -20,14 +22,9 @@
           <a class="nav-link" routerLink="/register">Register</a>
         </li>
 
+        <!-- Registrovani korisnik -->
         <li class="nav-item" *ngIf="isAuthenticated()">
           <a class="nav-link" routerLink="/posts">All Posts</a>
-        </li>
-        <li class="nav-item" *ngIf="isAuthenticated() && isAdmin()">
-          <a class="nav-link" [routerLink]="['/users']">All Users</a>
-        </li>
-        <li class="nav-item" *ngIf="isAuthenticated() && isAdmin()">
-          <a class="nav-link" [routerLink]="['/trends']">View Network Trends</a>
         </li>
         <li class="nav-item" *ngIf="isAuthenticated()">
           <a class="nav-link" routerLink="/create-post">Create Post</a>
@@ -42,11 +39,18 @@
           <a class="nav-link" routerLink="/map">Map</a>
         </li>
 
-        <!-- ADMIN link (vidljiv samo adminima) -->
-        <li class="nav-item" *ngIf="isAdmin()">
+        <!-- Admin -->
+        <li class="nav-item" *ngIf="isAuthenticated() && isAdmin()">
+          <a class="nav-link" routerLink="/users">All Users</a>
+        </li>
+        <li class="nav-item" *ngIf="isAuthenticated() && isAdmin()">
+          <a class="nav-link" routerLink="/trends">View Network Trends</a>
+        </li>
+        <li class="nav-item" *ngIf="isAuthenticated() && isAdmin()">
           <a class="nav-link" routerLink="/admin">Admin</a>
         </li>
 
+        <!-- Logout -->
         <li class="nav-item" *ngIf="isAuthenticated()">
           <a class="nav-link" (click)="logout()">Logout</a>
         </li>

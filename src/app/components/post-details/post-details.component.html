@@ -1,0 +1,32 @@
+<div class="container mt-4" *ngIf="!loading && post">
+  <div class="card post-card mx-auto">
+    <img *ngIf="post.image" [src]="post.image" class="post-image" alt="Post image">
+    <div class="card-body">
+      <h5 class="card-title">{{ post.description }}</h5>
+      <p class="text-muted mb-2">Likes: {{ post.likesCount }}</p>
+
+      <div class="d-flex gap-2 mb-3">
+        <button class="btn btn-outline-primary btn-sm" (click)="like()" [disabled]="liking">Like</button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="unlike()" [disabled]="liking">Unlike</button>
+        <button *ngIf="isAuthor" class="btn btn-danger btn-sm ms-auto" (click)="delete()" [disabled]="deleting">
+          {{ deleting ? 'Brisanje...' : 'Obriši' }}
+        </button>
+      </div>
+
+      <h6>Komentari</h6>
+      <div class="mb-3 d-flex gap-2">
+        <input [(ngModel)]="newComment" class="form-control" placeholder="Dodaj komentar...">
+        <button class="btn btn-primary" (click)="addComment()">Pošalji</button>
+      </div>
+
+      <div class="list-group">
+        <div class="list-group-item" *ngFor="let c of comments">
+          <div class="d-flex justify-content-between">
+            <span>{{ c.content }}</span>
+            <small class="text-muted">{{ c.createdAt | date:'short' }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import { PostService } from '../../services/post.service';
 import { UserService } from '../../services/user.service';
 import { Observable } from 'rxjs';
@@ -32,6 +32,11 @@ export interface PostDTO {
 export class PostsComponent implements OnInit {
   posts: PostDTO[] = [];
   me: any;
+  commentVisible: Record<number, boolean> = {};
+
+
+  @Input() onlyFollowing = false;
+  @Input() trending = false;
 
   newCommentText: Record<number, string> = {};
   submittingComment: Record<number, boolean> = {};
@@ -49,17 +54,40 @@ export class PostsComponent implements OnInit {
 
   loadPosts(): void {
     this.loading = true;
-    const obs: Observable<any> = this.postService.getAllPosts();
+    let obs: Observable<any>;
+
+    if (this.onlyFollowing) {
+      obs = this.postService.getFollowingPosts();
+    } else if (this.trending) {
+      obs = this.postService.getTrendingPosts();
+    } else {
+      obs = this.postService.getAllPosts();
+    }
+
     obs.subscribe({
       next: (list: PostDTO[]) => {
         this.posts = (list || []).map(p => ({ comments: [], ...p }));
         this.loading = false;
+
+        if (this.onlyFollowing && this.posts.length === 0) {
+          // Prikaži poruku ako nema following postova
+          alert("Ne pratite nikoga, zapratite korisnike da biste videli njihove objave.");
+        }
       },
-      error: (err: any) => { console.error('Failed to load posts', err); this.loading = false; }
+      error: (err: any) => {
+        console.error('Failed to load posts', err);
+        this.loading = false;
+      }
     });
   }
 
+
   like(post: PostDTO): void {
+    if (!this.me) {
+      alert("Morate se prijaviti da biste lajkovali objave.");
+      return;
+    }
+
     if (this.liking[post.id]) return;
     this.liking[post.id] = true;
     this.postService.likePost(post.id).subscribe({
@@ -76,6 +104,10 @@ export class PostsComponent implements OnInit {
   }
 
   addComment(post: PostDTO): void {
+    if (!this.me) {
+      alert("Morate se prijaviti da biste komentarisali.");
+      return;
+    }
     const text = (this.newCommentText[post.id] || '').trim();
     if (!text || this.submittingComment[post.id]) return;
     this.submittingComment[post.id] = true;
@@ -91,6 +123,30 @@ export class PostsComponent implements OnInit {
       error: (err: any) => { console.error('Failed to add comment', err); this.submittingComment[post.id] = false; }
     });
   }
+
+  unlike(post: PostDTO): void {
+    if (!this.me) {
+      alert("Morate se prijaviti da biste uklonili lajk.");
+      return;
+    }
+
+    if (this.liking[post.id]) return;
+    this.liking[post.id] = true;
+    this.postService.unlikePost(post.id).subscribe({
+      next: (_: any) => {
+        post.likesCount = Math.max(0, (post.likesCount || 0) - 1);
+        this.liking[post.id] = false;
+      },
+      error: (err: any) => {
+        console.error('Failed to unlike post', err);
+        this.liking[post.id] = false;
+      }
+    });
+  }
+  toggleComments(post: PostDTO): void {
+    this.commentVisible[post.id] = !this.commentVisible[post.id];
+  }
+
 
   trackByPostId(_i: number, p: PostDTO): number { return p.id; }
   trackByCommentId(_i: number, c: CommentDTO): number | string { return c.id ?? `${c.postId}-${_i}`; }

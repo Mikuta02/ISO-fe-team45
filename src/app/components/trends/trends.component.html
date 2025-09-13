@@ -60,7 +60,7 @@
               <div class="meta-line">
                 <span class="chip">❤ {{ p.likesCount || 0 }}</span>
                 <span class="dot"></span>
-                <span class="muted"><a class="btn-link" [routerLink]="['/user-profile', p.authorUsername]">Autor</a></span>
+                <span class="muted"><a class="btn-link" [routerLink]="['/user/', p.authorUsername]">Autor</a></span>
                 <span class="dot"></span>
                 <span class="muted">{{ prettyDate(p.createdAt) }}</span>
               </div>
